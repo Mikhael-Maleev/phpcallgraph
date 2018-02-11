@@ -1,12 +1,6 @@
 <?php
 class MyReflectionMethod extends ReflectionMethod {
-    
-    public function doSomeMetaProgramming()
-    {
-		return true;
-	}
-    
-    public function change() {
+	public function change() {
 		return true;
 	}
 
@@ -14,17 +8,14 @@ class MyReflectionMethod extends ReflectionMethod {
 		return new MyReflectionClass(parent::getDeclaringClass()->getName());
 	}
 
-	/*
     public function getParameters() {
     	$params = parent::getParameters();
 
     	$result = array();
     	foreach ($params as $param) {
-    		$result[] = new MyReflectionParameter( $this->getName(), $param->getName() );
+    		$result = new MyReflectionProperty($this->getName(), $param->getName());
     	}
     	return $result;
     }
-    */
-    
 }
 ?>

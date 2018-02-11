@@ -2,7 +2,7 @@
 /**
  * Autoloader definition for the Reflection component.
  *
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2007 eZ systems as. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  * @version //autogentag//
  * @filesource
@@ -13,27 +13,24 @@ return array(
     'ezcReflectionType'            => 'Reflection/interfaces/type.php',
     'ezcReflectionAbstractType'    => 'Reflection/types/abstract_type.php',
     'ezcReflectionClass'           => 'Reflection/class.php',
-    'ezcReflectionDocCommentParser'       => 'Reflection/interfaces/doc_comment_parser.php',
-    'ezcReflectionAnnotation'          => 'Reflection/annotations/annotation.php',
+    'ezcReflectionDocParser'       => 'Reflection/interfaces/parser.php',
+    'ezcReflectionDocTag'          => 'Reflection/phpdoc/tag.php',
     'ezcReflectionTypeFactory'     => 'Reflection/interfaces/type_factory.php',
-    'ezcReflection'             => 'Reflection/reflection.php',
+    'ezcReflectionApi'             => 'Reflection/reflection.php',
     'ezcReflectionArrayType'       => 'Reflection/types/array_type.php',
-    'ezcReflectionObjectType'       => 'Reflection/types/object_type.php',
-    'ezcReflectionAnnotationFactory'   => 'Reflection/annotation_factory.php',
-    'ezcReflectionAnnotationParam'     => 'Reflection/annotations/param.php',
-    'ezcReflectionAnnotationReturn'    => 'Reflection/annotations/return.php',
-    'ezcReflectionAnnotationVar'       => 'Reflection/annotations/var.php',
+    'ezcReflectionClassType'       => 'Reflection/types/class_type.php',
+    'ezcReflectionDocTagFactory'   => 'Reflection/phpdoc/tag_factory.php',
+    'ezcReflectionDocTagParam'     => 'Reflection/tags/param.php',
+    'ezcReflectionDocTagReturn'    => 'Reflection/tags/return.php',
+    'ezcReflectionDocTagVar'       => 'Reflection/tags/var.php',
     'ezcReflectionExtension'       => 'Reflection/extension.php',
     'ezcReflectionFunction'        => 'Reflection/function.php',
     'ezcReflectionMethod'          => 'Reflection/method.php',
     'ezcReflectionParameter'       => 'Reflection/parameter.php',
-    'ezcReflectionDocCommentParserImpl'    => 'Reflection/doc_comment_parser.php',
+    'ezcReflectionPhpDocParser'    => 'Reflection/phpdoc/parser.php',
     'ezcReflectionPrimitiveType'   => 'Reflection/types/primitive_type.php',
-    'ezcReflectionMixedType'       => 'Reflection/types/mixed_type.php',
     'ezcReflectionProperty'        => 'Reflection/property.php',
     'ezcReflectionTypeFactoryImpl' => 'Reflection/type_factory.php',
     'ezcReflectionTypeMapper'      => 'Reflection/type_mapper.php',
-    'ezcReflectionObject'          => 'Reflection/object.php',
-    'ezcReflectionCallToUndefinedMethodException' => 'Reflection/exceptions/call_to_undefined_method.php',
 );
 ?>

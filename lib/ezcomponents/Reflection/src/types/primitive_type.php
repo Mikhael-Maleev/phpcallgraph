@@ -4,7 +4,7 @@
  *
  * @package Reflection
  * @version //autogen//
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2008 eZ systems as. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  */
 
@@ -20,36 +20,65 @@
 class ezcReflectionPrimitiveType extends ezcReflectionAbstractType {
 
     /**
+     * @var string
+     */
+    private $typeName;
+
+    /**
+     * @param string $typeName
+     */
+    public function __construct($typeName) {
+        $this->typeName = $typeName;
+    }
+
+    /**
      * @return boolean
      */
-    public function isPrimitive()
-    {
+    public function isPrimitive() {
         return true;
     }
 
     /**
-     * Returns whether this type is one of integer, float, string, or boolean.
-     * 
-     * Types array, object, resource, NULL, mixed, number, and callback are not
-     * scalar.
-     * 
+     * @return string
+     */
+    public function toString() {
+        return $this->typeName;
+    }
+
+    /**
      * @return boolean
      */
-    function isScalarType()
-    {
-        if ( in_array(
-            $this->getTypeName(),
-            array(
-                ezcReflectionTypeMapper::CANONICAL_NAME_BOOLEAN,
-                ezcReflectionTypeMapper::CANONICAL_NAME_INTEGER,
-                ezcReflectionTypeMapper::CANONICAL_NAME_FLOAT,
-                ezcReflectionTypeMapper::CANONICAL_NAME_STRING
-            )
-        ))
-        {
+    function isStandardType() {
+        if ($this->typeName != 'mixed' and $this->typeName != 'void') {
             return true;
         }
         return false;
     }
 
+    /**
+     * Returns name of the correspondent XML Schema datatype
+     *
+     * The prefix `xsd' is comonly used to refer to the
+     * XML Schema namespace.
+     *
+     * @param boolean $usePrefix augments common prefix `xsd:' to the name
+     * @return string
+     */
+    function getXmlName($usePrefix = true) {
+        if ($usePrefix) {
+            $prefix = 'xsd:';
+        } else {
+            $prefix = '';
+        }
+        return $prefix . ezcReflectionTypeMapper::getInstance()->getXmlType($this->typeName);
+    }
+
+    /**
+     * @param DOMDocument
+     * @return DOMElement
+     */
+    function getXmlSchema($dom) {
+        return null;
+    }
 }
+?>

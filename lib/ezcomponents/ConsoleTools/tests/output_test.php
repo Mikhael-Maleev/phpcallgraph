@@ -5,7 +5,7 @@
  * @package ConsoleTools
  * @subpackage Tests
  * @version //autogentag//
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2009 eZ Systems AS. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  */
 
@@ -143,8 +143,13 @@ class ezcConsoleOutputTest extends ezcTestCase
         $this->consoleOutput->options->autobreak = 20;
         $testText = 'Some text which is obviously longer than 20 characters and should be broken.';
 
-        $testResText = 'Some text which is' . PHP_EOL . 'obviously longer' . PHP_EOL . 'than 20 characters' . PHP_EOL . 'and should be' . PHP_EOL . 'broken.';
-
+        $testResText = <<<EOT
+Some text which is
+obviously longer
+than 20 characters
+and should be
+broken.
+EOT;
         foreach ( $this->testFormats as $name => $inout ) 
         {
             ob_start();
@@ -190,17 +195,12 @@ class ezcConsoleOutputTest extends ezcTestCase
     {
         $outFile = $this->createTempDir( __FUNCTION__ ) . "/outfile";
         touch( $outFile );
-
         $this->consoleOutput->formats->targetFile->target = $outFile;
         $this->consoleOutput->formats->targetFile->color = "blue";
         $this->consoleOutput->outputText( "Hello, I'm a cool text, written to a file!", "targetFile" );
-        
-        $fakeRes = $this->consoleOutput->formatText( "Hello, I'm a cool text, written to a file!", "targetFile" );
 
-        unset( $this->consoleOutput );
-
-        $this->assertEquals(
-            $fakeRes,
+        $this->assertEquals( 
+            $this->consoleOutput->formatText( "Hello, I'm a cool text, written to a file!", "targetFile" ),
             file_get_contents( $outFile )
         );
 
@@ -350,10 +350,6 @@ class ezcConsoleOutputTest extends ezcTestCase
 
     public function testToPos()
     {
-	if ( ezcBaseFeatures::os() === 'Windows' )
-	{
-	    $this->markTestSkipped( "Does not work on Windows" );
-	}
         $output = new ezcConsoleOutput();
         ob_start();
         $output->outputText( "Test 123" );
@@ -368,10 +364,6 @@ class ezcConsoleOutputTest extends ezcTestCase
 
     public function testRestorePosFailure()
     {
-	if ( ezcBaseFeatures::os() === 'Windows' )
-	{
-	    $this->markTestSkipped( "Does not work on Windows" );
-	}
         $output = new ezcConsoleOutput();
         try
         {

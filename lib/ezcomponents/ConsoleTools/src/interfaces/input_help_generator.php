@@ -4,7 +4,7 @@
  *
  * @package ConsoleTools
  * @version //autogentag//
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2009 eZ Systems AS. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  * @filesource
  */
@@ -74,8 +74,8 @@ interface ezcConsoleInputHelpGenerator
      * the options to include.
      * 
      * @param bool $long 
-     * @param array(string) $optionsFilter
-     * @return array(array(string))
+     * @param array(int=>string) $optionsFilter
+     * @return array(int=>array(int=>string))
      */
     public function generateUngroupedOptionHelp( $long = false, array $optionsFilter = null );
 
@@ -122,7 +122,7 @@ interface ezcConsoleInputHelpGenerator
      * @param array(string=>array(string)) $groups
      * @param bool $long 
      * @param array(string) $params 
-     * @return array(string=>array(array(string)))
+     * @return array(string=>array(int=>array(int=>string)))
      */
     public function generateGroupedOptionHelp( array $groups, $long = false, array $optionsFilter = null );
 
@@ -152,7 +152,7 @@ interface ezcConsoleInputHelpGenerator
      * used.
      * 
      * @param bool $long
-     * @return array(array(string))
+     * @return array(int=>array(int=>string))
      */
     public function generateArgumentHelp( $long = false );
 

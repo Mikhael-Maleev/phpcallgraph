@@ -3,7 +3,7 @@
 class TestMethods {
 
     /**
-     * @oneannotationonly
+     * @onetagonly
      */
     public function __construct() {
 
@@ -42,17 +42,16 @@ class TestMethods {
 
 
     /**
-     * To check whether an annotation was used
+     * To check whether a tag was used
      * @restmethod POST /\/(.*?)\/m4\//
      * @restin XbelSerializer
      * @restout XbelSerializer
      * @webmethod
      * @author
      * @param string $test
-     * @param ezcReflection $test2
+     * @param ezcReflectionApi $test2
      * @param NonExistingType $test3
-     * @return string Hello
-     *         World!
+     * @return string Hello World
      */
     public function m4() {
 

@@ -45,7 +45,7 @@ class staticReflectionProperty
     /**
      * @var 
      */
-    public $class;
+    public $rclass;
 
     /**
      * Creates a copy of the object.

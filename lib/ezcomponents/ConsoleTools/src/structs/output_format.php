@@ -4,7 +4,7 @@
  *
  * @package ConsoleTools
  * @version //autogentag//
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2009 eZ Systems AS. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  * @filesource
  */
@@ -93,7 +93,7 @@ class ezcConsoleOutputFormat
      * Creates a new object of this class.
      * 
      * @param string $color             Name of a color value.
-     * @param array(string) $style Names of style values.
+     * @param array(int=>string) $style Names of style values.
      * @param string $bgcolor           Name of a bgcolor value.
      * @param string $target            Target output stream.
      */

@@ -93,15 +93,6 @@ class PHPCallGraphCli {
         );
         $dotcommandOption->shorthelp = 'Set dot command';
 
-        $ignoreOption = $input->registerOption(
-            new ezcConsoleOption(
-                'i',
-                'ignore',
-                ezcConsoleInput::TYPE_STRING
-            )
-        );
-        $ignoreOption->shorthelp = 'Set a regular expression for files or folders to ignore';
-
         $noexternalcallsOption = $input->registerOption(
             new ezcConsoleOption( 
                 'n',
@@ -179,12 +170,7 @@ class PHPCallGraphCli {
 
         if ($helpOption->value === true) {
             echo $input->getHelpText(
-                 "\n      _          ___      _ _  ___              _\n"
-                 . " ____| |__ ____ / __|__ _| | |/ __|_ _ __ _ ___| |__\n"
-                 . "|  _ \  _ \  _ V (__/ _` | | ( (,-/ '_V _` | _ \  _ \\\n"
-                 . "|  __/_| |_| __/\___\__,_|_|_|\___|_| \__,_| __/_| |_|\n"
-                 . "|_|       |_|     phpCallGraph.sf.net     |_|   v" . PHPCallGraph::VERSION . "\n"
-                 . "\n"
+                 "\nPHPCallGraph v" . PHPCallGraph::VERSION . "\n\n"
                  . "A tool to generate static call graphs for PHP source code.\n"
                  . "The graphs can be leveraged to gain a better understanding of\n"
                  . "large software systems or even to debunk design flaws in them."
@@ -237,7 +223,7 @@ class PHPCallGraphCli {
             $phpcg->setAutoloadFile($autoloadOption->value);
 
             // start generation
-            $phpcg->parse($input->getArguments(), $recursiveOption->value, $ignoreOption->value);
+            $phpcg->parse($input->getArguments(), $recursiveOption->value);
 
             // output result
             if ($outputfileOption->value === false) {

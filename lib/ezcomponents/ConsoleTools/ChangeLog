@@ -1,29 +1,4 @@
-1.6.1 - [RELEASEDATE]
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-- Fixed issue #16055: Corrected regression in error message for option
-  dependencies.
-
-
-1.6 - Monday 21 December 2009
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-- No changes.
-
-
-1.6rc1 - Monday 07 December 2009
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-- No changes.
-
-
-1.6beta1 - Monday 23 November 2009
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-- No changes.
-
-
-1.6alpha1 - Tuesday 01 September 2009
+1.6alpha1 - [RELEASEDATE]
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - Implemented enhancement #14804: ezcConsoleOptionRule now has a property

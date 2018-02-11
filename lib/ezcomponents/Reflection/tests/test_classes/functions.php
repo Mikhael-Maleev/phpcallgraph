@@ -1,11 +1,11 @@
 <?php
 
 /**
- * To check whether an annotation was used
+ * To check whether a tag was used
  * @webmethod
  * @author
  * @param string $test
- * @param ezcReflection $test2
+ * @param ezcReflectionApi $test2
  * @param ReflectionClass $test3
  * @return string Hello World
  */
@@ -17,7 +17,6 @@ function mmm($t = 'foo') {}
 
 /**
  * @param void $DocuFlaw
- * @param boolean
  * @author flaw joe
 weird coding standards should also be supported: */function m2() {
 
@@ -39,9 +38,6 @@ function m3() {
  */
 function m4() {
 
-}
-
-function functionWithTypeHint( ReflectionClass $paramWithTypeHintOnly ) {
 }
 
 ?>

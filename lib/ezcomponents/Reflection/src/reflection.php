@@ -1,13 +1,14 @@
 <?php
 /**
- * File containing the ezcReflection class.
+ * File containing the ezcReflectionApi class.
  *
  * @package Reflection
  * @version //autogen//
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2008 eZ systems as. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  */
 
+// TODO: rename ezcReflectionApi to ezcReflection
 /**
  * Holds type factory for generating type objects by given name
  *
@@ -16,7 +17,7 @@
  * @author Stefan Marr <mail@stefan-marr.de>
  * @author Falko Menge <mail@falko-menge.de>
  */
-class ezcReflection {
+class ezcReflectionApi {
 
 	/**
 	 * @var ezcReflectionTypeFactory
@@ -24,7 +25,7 @@ class ezcReflection {
 	protected static $reflectionTypeFactory = null;
 
 	/**
-	 * @var ezcReflectionDocCommentParser
+	 * @var ezcReflectionDocParser
      *      Current documentation parser used by all ezcReflection classes
 	 */
 	protected static $docParser = null;
@@ -36,16 +37,17 @@ class ezcReflection {
     private function __construct() {}
     // @codeCoverageIgnoreEnd
 
+    // TODO: rename getDocParserInstance() to getDocParser()
     /**
      * Returns a copy of the current documentation parser used by all
      * ezcReflection classes
      *
-     * @return ezcReflectionDocCommentParser
+     * @return ezcReflectionDocParser
      */
-    public static function getDocCommentParser()
+    public static function getDocParserInstance()
     {
-    	if ( !( self::$docParser instanceof ezcReflectionDocCommentParser ) ) {
-    		self::$docParser = new ezcReflectionDocCommentParserImpl();
+    	if (self::$docParser == null) {
+    		self::$docParser = new ezcReflectionPhpDocParser();
     	}
     	return clone self::$docParser;
     }
@@ -53,10 +55,10 @@ class ezcReflection {
     /**
      * Sets the documentation parser used by all ezcReflection classes
      *
-     * @param ezcReflectionDocCommentParser $docParser Parser for documentation blocks
+     * @param setDocParser $docParser Parser for documentation blocks
      * @return void
      */
-    public static function setDocCommentParser(ezcReflectionDocCommentParser $docParser)
+    public static function setDocParser(ezcReflectionDocParser $docParser)
     {
     	self::$docParser = $docParser;
     }
@@ -68,7 +70,7 @@ class ezcReflection {
      */
     public static function getReflectionTypeFactory()
     {
-        if ( !( self::$reflectionTypeFactory instanceof ezcReflectionTypeFactory ) ) {
+        if (self::$reflectionTypeFactory == null) {
             self::$reflectionTypeFactory = new ezcReflectionTypeFactoryImpl();
         }
     	return clone self::$reflectionTypeFactory;

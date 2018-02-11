@@ -566,10 +566,10 @@ class PEAR
             $ec = 'PEAR_Error';
         }
         if ($skipmsg) {
-            $a = &new $ec($code, $mode, $options, $userinfo);
+            $a = new $ec($code, $mode, $options, $userinfo);
             return $a;
         } else {
-            $a = &new $ec($message, $code, $mode, $options, $userinfo);
+            $a = new $ec($message, $code, $mode, $options, $userinfo);
             return $a;
         }
     }
@@ -796,7 +796,10 @@ function _PEAR_call_destructors()
     // Now call the shutdown functions
     if (is_array($GLOBALS['_PEAR_shutdown_funcs']) AND !empty($GLOBALS['_PEAR_shutdown_funcs'])) {
         foreach ($GLOBALS['_PEAR_shutdown_funcs'] as $value) {
-            call_user_func_array($value[0], $value[1]);
+            $class_name = $value[0][0];
+            $class_obj = new $class_name();
+            $method = $value[0][1];
+            call_user_func_array(array($class_obj, $method), $value[1]);
         }
     }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2008 eZ systems as. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  * @version //autogen//
  * @filesource
@@ -30,7 +30,7 @@ class ezcReflectionMethodFromClassTest extends ezcReflectionMethodTest
         $classEzcReflectionMethod = new ezcReflectionClass( 'ezcReflectionMethod' );
         $this->ezc_ezcReflectionMethod_isInternal = $classEzcReflectionMethod->getMethod( 'isInternal' );
         $this->ezc_ezcReflectionMethod_isInherited = $classEzcReflectionMethod->getMethod( 'isInherited' );
-        $this->ezc_ezcReflectionMethod_getAnnotations = $classEzcReflectionMethod->getMethod( 'getAnnotations' );
+        $this->ezc_ezcReflectionMethod_getTags = $classEzcReflectionMethod->getMethod( 'getTags' );
     }
 
     public static function suite()

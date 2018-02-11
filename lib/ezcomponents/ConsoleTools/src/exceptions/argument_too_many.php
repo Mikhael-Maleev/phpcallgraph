@@ -4,7 +4,7 @@
  * 
  * @package ConsoleTools
  * @version //autogen//
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2009 eZ Systems AS. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  */
 
@@ -20,7 +20,7 @@ class ezcConsoleTooManyArgumentsException extends ezcConsoleArgumentException
     /**
      * Creates a new exception object. 
      * 
-     * @param array(string) $args Arguments array.
+     * @param array(int=>string) $args Arguments array.
      * @param int $i                   Index in the arguments array.
      * @return void
      */

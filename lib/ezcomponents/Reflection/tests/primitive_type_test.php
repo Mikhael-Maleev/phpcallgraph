@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2008 eZ systems as. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  * @version //autogen//
  * @filesource
@@ -8,7 +8,7 @@
  * @subpackage Tests
  */
 
-class ezcReflectionPrimitiveTypeTest extends ezcReflectionAbstractTypeTest
+class ezcReflectionPrimitiveTypeTest extends ezcTestCase
 {
     /**
      * @var ezcReflectionPrimitiveType
@@ -25,16 +25,16 @@ class ezcReflectionPrimitiveTypeTest extends ezcReflectionAbstractTypeTest
         $this->assertTrue( $this->type->isPrimitive() );
     }
 
-    public function testIsScalarType()
+    public function testIsStandardType()
     {
-        $this->assertTrue( $this->type->isScalarType() );
+        $this->assertTrue( $this->type->isStandardType() );
     }
 
-    public function testIsScalarType2()
+    public function testIsStandardType2()
     {
-        $this->type = new ezcReflectionPrimitiveType( 'void' );
+        $this->type = new ezcReflectionPrimitiveType( 'mixed' );
 
-        $this->assertFalse( $this->type->isScalarType() );
+        $this->assertFalse( $this->type->isStandardType() );
     }
 
     public function testGetXmlNameWithPrefix()

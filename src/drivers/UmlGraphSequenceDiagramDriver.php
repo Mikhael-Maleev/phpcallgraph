@@ -484,7 +484,7 @@ maxpsht  =18;   #Maximum height of picture
 	   print "Trying to register non-object :".$object;
 	   exit ("DIE");
 	}
-	$class = $this->classForObj($object);
+	$class = $this->rclassForObj($object);
 	$this->addToObjectDefinitions('object('
                    . $object.''
                    . ','

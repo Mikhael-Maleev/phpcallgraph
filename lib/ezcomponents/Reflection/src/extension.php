@@ -4,13 +4,13 @@
  *
  * @package Reflection
  * @version //autogen//
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2008 eZ systems as. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  */
 
 /**
- * Extends the ReflectionExtension class to provide type information
- * using PHPDoc annotations.
+ * Extends the ReflectionExtension class using PHPDoc comments to provide
+ * type information
  *
  * @package Reflection
  * @version //autogen//
@@ -41,29 +41,6 @@ class ezcReflectionExtension extends ReflectionExtension {
     }
 
     /**
-     * Use overloading to call additional methods
-     * of the ReflectionException instance given to the constructor.
-     *
-     * @param string $method Method to be called
-     * @param array  $arguments Arguments that were passed
-     * @return mixed
-     */
-    public function __call( $method, $arguments )
-    {
-        $callback = array( $this->reflectionSource, $method );  
-        if ( $this->reflectionSource instanceof parent
-             and is_callable( $callback ) )
-        {
-            // query external reflection object
-            return call_user_func_array( $callback, $arguments );
-        }
-        else
-        {
-            throw new ezcReflectionCallToUndefinedMethodException( __CLASS__, $method );
-        }
-    }
-
-    /**
      * Returns an array of this extension's fuctions
      * @return ezcReflectionFunction[]
      */
@@ -82,9 +59,9 @@ class ezcReflectionExtension extends ReflectionExtension {
     }
 
     /**
-     * Returns an array containing ezcReflectionClass objects for all
+     * Returns an array containing ezcReflectionClassType objects for all
      * classes of this extension
-     * @return ezcReflectionClass[]
+     * @return ezcReflectionClassType[]
      */
     public function getClasses() {
         if ( $this->reflectionSource ) {
@@ -95,7 +72,7 @@ class ezcReflectionExtension extends ReflectionExtension {
 
         $result = array();
         foreach ($classes as $class) {
-            $result[] = new ezcReflectionClass($class);
+            $result[] = new ezcReflectionClassType($class);
         }
         return $result;
     }
@@ -200,20 +177,20 @@ class ezcReflectionExtension extends ReflectionExtension {
     }
 
     /**
-     * Exports a reflection object.
+     * Use overloading to call additional methods
+     * of the reflection instance given to the constructor
      *
-     * Returns the output if TRUE is specified for return, printing it otherwise.
-     * This is purely a wrapper method, which calls the corresponding method of
-     * the parent class.
-     * @param ReflectionExtension|string $extension
-     *        ReflectionExtension object or name of the extension
-     * @param boolean $return
-     *        Whether to return (TRUE) or print (FALSE) the output
+     * @param string $method Method to be called
+     * @param array(integer => mixed) $arguments Arguments that were passed
      * @return mixed
      */
-    public static function export($extension, $return = false) {
-        return parent::export($extension, $return);
+    public function __call( $method, $arguments )
+    {
+        if ( $this->reflectionSource ) {
+            return call_user_func_array( array($this->reflectionSource, $method), $arguments );
+        } else {
+            throw new Exception( 'Call to undefined method ' . __CLASS__ . '::' . $method );
+        }
     }
-
 }
 ?>

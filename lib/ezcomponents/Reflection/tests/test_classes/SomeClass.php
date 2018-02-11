@@ -7,20 +7,9 @@
  */
 class SomeClass extends BaseClass implements IInterface {
     /**
-     * @var int[] An array of integers
+     * @var int[]
      */
     private $fields;
-
-    /**
-     * @var SomeClass
-     */
-    public $publicProperty;
-    
-    protected $undocumentedProperty;
-
-    const CLASS_CONSTANT = 'ConstantValue';
-    
-    public static $staticProperty = 'StaticValue';
 
     public function __construct() {
         // echo "New SomeClass instance created.\n";

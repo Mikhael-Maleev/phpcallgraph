@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2008 eZ systems as. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  * @version //autogen//
  * @filesource
@@ -10,23 +10,43 @@
 
 class ezcReflectionTest extends ezcTestCase
 {
+    public function testGetDocParser() {
+        self::assertType( 'ezcReflectionDocParser', ezcReflectionApi::getDocParserInstance() );
+    }
+
+    public function testSetDocParser() {
+        $annotationParser = new ezcReflectionPhpDocParser();
+        ezcReflectionApi::setDocParser( $annotationParser );
+        self::assertEquals( $annotationParser, ezcReflectionApi::getDocParserInstance() );
+    }
+
+    public function testGetReflectionTypeFactory() {
+        self::assertType( 'ezcReflectionTypeFactory', ezcReflectionApi::getReflectionTypeFactory() );
+    }
+
+    public function testSetReflectionTypeFactory() {
+        $factory = new ezcReflectionTypeFactoryImpl();
+        ezcReflectionApi::setReflectionTypeFactory( $factory );
+        self::assertEquals( $factory, ezcReflectionApi::getReflectionTypeFactory() );
+    }
+
     public function testGetTypeByName() {
-        $string = ezcReflection::getTypeByName('string');
-        self::assertEquals('string', $string->getTypeName());
+        $string = ezcReflectionApi::getTypeByName('string');
+        self::assertEquals('string', $string->toString());
 
-        $int = ezcReflection::getTypeByName('int');
-        self::assertEquals('integer', $int->getTypeName());
+        $int = ezcReflectionApi::getTypeByName('int');
+        self::assertEquals('integer', $int->toString());
 
-        $webservice = ezcReflection::getTypeByName('TestWebservice');
-        self::assertEquals('TestWebservice', $webservice->getTypeName());
+        $webservice = ezcReflectionApi::getTypeByName('TestWebservice');
+        self::assertEquals('TestWebservice', $webservice->toString());
 
-        $class = ezcReflection::getTypeByName('ezcReflectionClass');
-        self::assertEquals('ezcReflectionClass', $class->getTypeName());
+        $class = ezcReflectionApi::getTypeByName('ezcReflectionClass');
+        self::assertEquals('ezcReflectionClass', $class->toString());
 
     }
 
     public function testGetClasses() {
-        $classes = ezcReflection::getClasses();
+        $classes = ezcReflectionApi::getClasses();
         self::assertContainsOnly( 'ezcReflectionClass', $classes );
         foreach ( $classes as $className => $class) {
             self::assertFalse( $class->isInterface() );
@@ -37,7 +57,7 @@ class ezcReflectionTest extends ezcTestCase
     }
 
     public function testGetInterfaces() {
-        $interfaces = ezcReflection::getInterfaces();
+        $interfaces = ezcReflectionApi::getInterfaces();
         self::assertContainsOnly( 'ezcReflectionClass', $interfaces );
         foreach ( $interfaces as $interfaceName => $interface) {
             self::assertTrue( $interface->isInterface() );
@@ -50,8 +70,7 @@ class ezcReflectionTest extends ezcTestCase
     public function testGetUserDefinedFunctions() {
         $definedFunctionArrays = get_defined_functions();
         $userDefinedFunctions = $definedFunctionArrays['user'];
-        $functions = ezcReflection::getUserDefinedFunctions();
-        self::assertEquals( count( $userDefinedFunctions ), count( $functions ) );
+        $functions = ezcReflectionApi::getUserDefinedFunctions();
         self::assertContainsOnly( 'ezcReflectionFunction', $functions );
         foreach ( $functions as $functionName => $function ) {
             self::assertTrue( $function->isUserDefined() );
@@ -79,8 +98,7 @@ class ezcReflectionTest extends ezcTestCase
     public function testGetInteralFunctions() {
         $definedFunctionArrays = get_defined_functions();
         $internalFunctions = $definedFunctionArrays['internal'];
-        $functions = ezcReflection::getInternalFunctions();
-        self::assertEquals( count( $internalFunctions ), count( $functions ) );
+        $functions = ezcReflectionApi::getInternalFunctions();
         self::assertContainsOnly( 'ezcReflectionFunction', $functions );
         foreach ( $functions as $functionName => $function ) {
             self::assertTrue( $function->isInternal() );
@@ -92,8 +110,7 @@ class ezcReflectionTest extends ezcTestCase
     public function testGetFunctions() {
         $definedFunctionArrays = get_defined_functions();
         $definedFunctions = array_merge( $definedFunctionArrays['internal'], $definedFunctionArrays['user'] );
-        $functions = ezcReflection::getFunctions();
-        self::assertEquals( count( $definedFunctions ), count( $functions ) );
+        $functions = ezcReflectionApi::getFunctions();
         self::assertContainsOnly( 'ezcReflectionFunction', $functions );
         foreach ( $functions as $functionName => $function ) {
             self::assertEquals( strtolower( $function->getName() ), $functionName );
@@ -115,26 +132,6 @@ class ezcReflectionTest extends ezcTestCase
                  contains <string:PHPUnit_Util_ErrorHandler>.
             */
         }
-    }
-
-    public function testGetDocCommentParser() {
-        self::assertType( 'ezcReflectionDocCommentParser', ezcReflection::getDocCommentParser() );
-    }
-
-    public function testSetDocCommentParser() {
-        $docCommentParser = new ezcReflectionDocCommentParserImpl();
-        ezcReflection::setDocCommentParser( $docCommentParser );
-        self::assertEquals( $docCommentParser, ezcReflection::getDocCommentParser() );
-    }
-
-    public function testGetReflectionTypeFactory() {
-        self::assertType( 'ezcReflectionTypeFactory', ezcReflection::getReflectionTypeFactory() );
-    }
-
-    public function testSetReflectionTypeFactory() {
-        $factory = new ezcReflectionTypeFactoryImpl();
-        ezcReflection::setReflectionTypeFactory( $factory );
-        self::assertEquals( $factory, ezcReflection::getReflectionTypeFactory() );
     }
 
     public static function suite()

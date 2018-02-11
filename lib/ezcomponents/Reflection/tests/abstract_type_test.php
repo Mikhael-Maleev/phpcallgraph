@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2008 eZ systems as. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  * @version //autogen//
  * @filesource
@@ -13,70 +13,51 @@ class ezcReflectionAbstractTypeTest extends ezcTestCase
     /**
      * @var ezcReflectionAbstractType
      */
-    protected $type;
+    protected $mock;
 
-    protected function setUp()
+    public function setUp()
     {
-        $this->type = $this->getMock(
-            'ezcReflectionAbstractType',
-            null,
-            array( 'string' )
+        $this->mock = $this->getMock(
+          'ezcReflectionAbstractType',
+          array(
+            'isStandardType', 'getXmlName', 'getXmlSchema', 'toString'
+          )
         );
     }
 
-    protected function tearDown()
+    public function testGetArrayType()
     {
-        $this->type = null;
+        $this->assertNull( $this->mock->getArrayType() );
     }
 
-    public function testGetTypeName()
+    public function testGetMapIndexType()
     {
-        self::assertEquals( 'string', $this->type->getTypeName() );
+        $this->assertNull( $this->mock->getMapIndexType() );
     }
 
-    public function testToString()
+    public function testGetMapValueType()
     {
-        self::assertEquals( $this->type->getTypeName(), (string) $this->type );
+        $this->assertNull( $this->mock->getMapValueType() );
     }
 
     public function testIsArray()
     {
-        $this->assertFalse( $this->type->isArray() );
+        $this->assertFalse( $this->mock->isArray() );
     }
 
-    public function testIsObject()
+    public function testIsClass()
     {
-        $this->assertFalse( $this->type->isObject() );
+        $this->assertFalse( $this->mock->isClass() );
     }
 
     public function testIsPrimitive()
     {
-        $this->assertFalse( $this->type->isPrimitive() );
+        $this->assertFalse( $this->mock->isPrimitive() );
     }
 
     public function testIsMap()
     {
-        $this->assertFalse( $this->type->isMap() );
-    }
-
-    public function testIsScalarType()
-    {
-        $this->assertFalse( $this->type->isScalarType() );
-    }
-
-    public function testGetXmlNameWithPrefix()
-    {
-        $this->assertEquals( 'xsd:string', $this->type->getXmlName() );
-    }
-
-    public function testGetXmlNameWithoutPrefix()
-    {
-        $this->assertEquals( 'string', $this->type->getXmlName( false ) );
-    }
-
-    public function testGetXmlSchema()
-    {
-        $this->assertNull( $this->type->getXmlSchema( new DOMDocument() ) );
+        $this->assertFalse( $this->mock->isMap() );
     }
 
     public static function suite()

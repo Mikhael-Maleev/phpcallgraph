@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2008 eZ systems as. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  * @version //autogen//
  * @filesource
@@ -10,43 +10,22 @@
 
 class ezcReflectionPropertyTest extends ezcTestCase
 {
-    /**#@+
-     * @var string
-     */
-	protected $refPropName;
-	protected $publicPropertyName;
-	protected $undocumentedPropertyName;
-	/**#@-*/
-	
-	/**#@+
+    /**
      * @var ezcReflectionProperty
      */
     protected $refProp;
-    protected $publicProperty;
-    /**#@-*/
 
-    /**
-     * @var array( string => array( string => ReflectionProperty ) )
-     */
-    protected $expected;
-    
-    /**
-     * @var array( string => array( string => ezcReflectionProperty ) )
-     */
-    protected $actual;
-    
     public function setUp() {
-		$this->refPropName = 'fields';
-        $this->publicPropertyName = 'publicProperty';
-        $this->undocumentedPropertyName = 'undocumentedProperty';
-        $this->instanceOfSomeClass = new SomeClass();
-        $this->setUpFixtures();
-    }
-
-    public function setUpFixtures() {
-		$this->refProp = new ezcReflectionProperty( 'SomeClass', $this->refPropName );
-        $this->publicProperty = new ezcReflectionProperty( 'SomeClass', $this->publicPropertyName );
-        $this->actual['SomeClass']['undocumentedProperty'] = new ezcReflectionProperty( 'SomeClass', $this->undocumentedPropertyName );
+        $class = new ezcReflectionClass('SomeClass');
+		$this->refProp = $class->getProperty('fields');
+        /*
+        foreach ( $class->getProperties() as $property ) {
+            if ( $property->getName() == 'fields' ) {
+		        $this->refProp = $property;
+                break;
+            }
+        }
+        */
     }
 
     public function tearDown() {
@@ -56,30 +35,28 @@ class ezcReflectionPropertyTest extends ezcTestCase
     public function testGetType() {
         $type = $this->refProp->getType();
         self::assertType('ezcReflectionArrayType', $type);
-        self::assertEquals('integer[]', $type->getTypeName());
-        
-        self::assertNull( $this->actual['SomeClass']['undocumentedProperty']->getType() );
+        self::assertEquals('integer[]', $type->toString());
     }
 
     public function testGetDeclaringClass() {
         $class = $this->refProp->getDeclaringClass();
-        self::assertType('ezcReflectionClass', $class);
-        self::assertEquals('SomeClass', $class->getName());
+        self::assertType('ezcReflectionClassType', $class);
+        self::assertEquals('SomeClass', $class->toString());
     }
 
-    public function testHasAnnotation() {
-        self::assertTrue($this->refProp->hasAnnotation('var'));
-        self::assertFalse($this->refProp->hasAnnotation('nonExistingAnnotation'));
+    public function testIsTagged() {
+        self::assertTrue($this->refProp->isTagged('var'));
+        self::assertFalse($this->refProp->isTagged('nonExistingAnnotation'));
     }
 
-    public function testGetAnnotations() {
-        $expectedAnnotations = array('var');
+    public function testGetTags() {
+        $expectedTags = array('var');
 
-        $annotations = $this->refProp->getAnnotations();
-        ReflectionTestHelper::expectedAnnotations($expectedAnnotations, $annotations, $this);
+        $tags = $this->refProp->getTags();
+        ReflectionTestHelper::expectedTags($expectedTags, $tags, $this);
 
-        $annotations = $this->refProp->getAnnotations('var');
-        ReflectionTestHelper::expectedAnnotations($expectedAnnotations, $annotations, $this);
+        $tags = $this->refProp->getTags('var');
+        ReflectionTestHelper::expectedTags($expectedTags, $tags, $this);
     }
 
 	public function testGetName() {
@@ -110,46 +87,35 @@ class ezcReflectionPropertyTest extends ezcTestCase
 		self::assertEquals(1024, $this->refProp->getModifiers());
 	}
 
+	/**
+	* @expectedException ReflectionException
+	*/
 	public function testGetValue() {
-		$o = $this->instanceOfSomeClass;
-        $value = new SomeClass();
-		self::assertEquals(null, $this->publicProperty->getValue($o));
-        $propertyName = $this->publicPropertyName;
-	    $o->$propertyName = $value;
-		self::assertSame($value, $this->publicProperty->getValue($o));
-    }
-
-	/**
-     * @expectedException ReflectionException
-     */
-	public function testGetValueOfPrivatePropertyThrowsException() {
-		$this->refProp->getValue($this->instanceOfSomeClass);
+		$o = new SomeClass();
+		self::assertEquals(null, $this->refProp->getValue($o));
 	}
 
+	/**
+	* @expectedException ReflectionException
+	*/
 	public function testSetValue() {
-		$o = $this->instanceOfSomeClass;
-        $value = $this->instanceOfSomeClass;
-        $propertyName = $this->publicPropertyName;
-		self::assertEquals(null, $o->$propertyName);
-		$this->publicProperty->setValue($o, $value);
-		self::assertSame($value, $o->$propertyName);
-	}
-
-	/**
-     * @expectedException ReflectionException
-     */
-	public function testSetValueOfPrivatePropertyThrowsException() {
-		$this->refProp->setValue($this->instanceOfSomeClass, 3);
+		$o = new SomeClass();
+		//self::assertEquals(null, $this->refProp->getValue($o));
+		$this->refProp->setValue($o, 3);
+		//self::assertEquals(3, $this->refProp->getValue($o));
 	}
 
 	public function testGetDocComment() {
+		$o = new SomeClass();
 		self::assertEquals("/**
-     * @var int[] An array of integers
-     */", $this->refProp->getDocComment($this->instanceOfSomeClass));
+     * @var int[]
+     */", $this->refProp->getDocComment($o));
 	}
+
 
     public static function suite()
     {
          return new PHPUnit_Framework_TestSuite( "ezcReflectionPropertyTest" );
     }
 }
+?>

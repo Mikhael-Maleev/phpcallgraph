@@ -4,13 +4,13 @@
  *
  * @package Reflection
  * @version //autogen//
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2008 eZ systems as. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  */
 
 /**
- * Extends the ReflectionProperty class to provide type information
- * using PHPDoc annotations.
+ * Extends the ReflectionProperty class using PHPDoc comments to provide
+ * type information.
  *
  * @package Reflection
  * @version //autogen//
@@ -20,19 +20,19 @@ class ezcReflectionProperty extends ReflectionProperty
 {
 
 	/**
-     * @var ezcReflectionDocCommentParser Parser for source code annotations
+     * @var ezcReflectionDocParser Parser for source code annotations
      */
-    protected $docParser;
+    protected $docParser = null;
 
     /**
      * @var ReflectionProperty
      *      Name, instance of the property's class
      *      or ReflectionProperty object of the property
      */
-	protected $reflectionSource;
+	protected $reflectionSource = null;
 
     /**
-     * Constructs a new ezcReflectionProperty object
+     * Constructor.
      *
      * Throws an Exception in case the given property does not exist
      * @param string|object|ReflectionProperty $class
@@ -45,79 +45,33 @@ class ezcReflectionProperty extends ReflectionProperty
      */
     public function __construct( $class, $name = null )
     {
-        if ( !$class instanceof ReflectionProperty )
-        {
-            parent::__construct( $class, $name );
-        }
-        $this->reflectionSource = $class;
+		if ( !$class instanceof ReflectionProperty )
+{
+			parent::__construct( $class, $name );
+		}
+		$this->reflectionSource = $class;
 
-        $this->docParser = ezcReflection::getDocCommentParser();
-        $this->docParser->parse( $this->getDocComment() );
-    }
-
-    /**
-     * Use overloading to call additional methods
-     * of the ReflectionProperty instance given to the constructor.
-     *
-     * @param string $method Method to be called
-     * @param array  $arguments Arguments that were passed
-     * @return mixed
-     */
-    public function __call( $method, $arguments )
-    {
-        $callback = array( $this->reflectionSource, $method );  
-        if ( $this->reflectionSource instanceof parent
-             and is_callable( $callback ) )
-        {
-            // query external reflection object
-            return call_user_func_array( $callback, $arguments );
-        }
-        else
-        {
-            throw new ezcReflectionCallToUndefinedMethodException( __CLASS__, $method );
-        }
-    }
-
-    /**
-     * Forwards a method invocation to either the reflection source passed to
-     * the constructor of this class when creating an instance or to the parent
-     * class.
-     *
-     * This method is part of the dependency injection mechanism and serves as
-     * a helper for implementing wrapper methods without code duplication.
-     * @param string $method Name of the method to be invoked
-     * @param mixed[] $arguments Arguments to be passed to the method
-     * @return mixed Return value of the invoked method
-     */
-    protected function forwardCallToReflectionSource( $method, $arguments = array() ) {
-        if ( $this->reflectionSource instanceof parent ) {
-            return call_user_func_array( array( $this->reflectionSource, $method ), $arguments );
-        } else {
-            //*
-            return call_user_func_array( array( $this, 'parent::' . $method ), $arguments );
-            /*/
-            $argumentStrings = array();
-            foreach ( array_keys( $arguments ) as $key ) {
-                $argumentStrings[] = '$arguments[' . var_export( $key, true ) . ']';
-            }
-            $cmd = 'return parent::$method( ' . implode( ', ', $argumentStrings ) . ' );';
-            return eval( $cmd );
-            //*/
-        }
+        $this->docParser = ezcReflectionApi::getDocParserInstance();
+		$this->docParser->parse( $this->getDocComment() );
     }
 
     /**
      * Determines the type of the property based on source code annotations.
      *
      * @return ezcReflectionType Type of the property
-     * @since PHP 5.1.0
      */
     public function getType()
     {
-        $vars = $this->docParser->getVarAnnotations();
+        if ( $this->docParser == null )
+        {
+            return 'unknown (ReflectionProperty::getDocComment was introduced'.
+                   ' in PHP version 5.1)';
+        }
+
+        $vars = $this->docParser->getVarTags();
         if ( isset( $vars[0] ) )
         {
-            return ezcReflection::getTypeByName( $vars[0]->getTypeName() );
+            return ezcReflectionApi::getTypeByName( $vars[0]->getType() );
         }
         else
         {
@@ -128,19 +82,19 @@ class ezcReflectionProperty extends ReflectionProperty
     /**
      * Returns the declaring class.
      *
-     * @return ezcReflectionClass
+     * @return ezcReflectionClassType
      */
     public function getDeclaringClass()
     {
 		if ( $this->reflectionSource instanceof ReflectionProperty )
         {
-            return new ezcReflectionClass( $this->reflectionSource->getDeclaringClass() );
-        }
+			return new ezcReflectionClassType( $this->reflectionSource->getDeclaringClass() );
+		}
         else
         {
-            $class = parent::getDeclaringClass();
-            return new ezcReflectionClass( $class->getName() );
-        }
+			$class = parent::getDeclaringClass();
+			return new ezcReflectionClassType( $class->getName() );
+		}
     }
 
     /**
@@ -148,25 +102,23 @@ class ezcReflectionProperty extends ReflectionProperty
      *
      * @param string $annotation Name of the annotation
      * @return boolean
-     * @since PHP 5.1.0
      */
-    public function hasAnnotation($annotation) {
-        return $this->docParser->hasAnnotation($annotation);
+    public function isTagged($annotation) {
+        return $this->docParser->isTagged($annotation);
     }
 
     /**
      * Returns an array of annotations (optinally only annotations of a given name)
      *
      * @param string $name Name of the annotations
-     * @return ezcReflectionAnnotation[] Annotations
-     * @since PHP 5.1.0
+     * @return ezcReflectionDocTag[] Annotations
      */
-    public function getAnnotations($name = '') {
+    public function getTags($name = '') {
         if ($name == '') {
-            return $this->docParser->getAnnotations();
+            return $this->docParser->getTags();
         }
         else {
-            return $this->docParser->getAnnotationsByName($name);
+            return $this->docParser->getTagsByName($name);
         }
     }
 
@@ -174,7 +126,6 @@ class ezcReflectionProperty extends ReflectionProperty
      * Returns the PHPDoc comment of the property.
      *
      * @return string PHPDoc comment
-     * @since PHP 5.1.0
      */
     public function getDocComment()
     {
@@ -277,7 +228,7 @@ class ezcReflectionProperty extends ReflectionProperty
     }
 
 	/**
-     * Returns whether the property is a default property defined in the class.
+     * Returns wether the property is a default property defined in the class.
      *
 	 * A default property is defined in the class definition.
 	 * A non-default property is an instance specific state.
@@ -302,72 +253,70 @@ class ezcReflectionProperty extends ReflectionProperty
      */
     public function getModifiers()
     {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
+        if ( $this->reflectionSource instanceof ReflectionProperty )
+        {
+            return $this->reflectionSource->getModifiers();
+        }
+        else
+        {
+            return parent::getModifiers();
+        }
     }
 
 	/**
      * Returns the property's value.
      *
-     * @param object $object An object from which the property value is obtained
+     * @param object An object from which the property value is obtained
      * @return mixed The property's value
      */
     public function getValue( $object = null )
     {
-        return $this->forwardCallToReflectionSource( __FUNCTION__, array( $object ) );
+        if ( $this->reflectionSource instanceof ReflectionProperty )
+        {
+            return $this->reflectionSource->getValue( $object );
+        }
+        else
+        {
+            return parent::getValue( $object );
+        }
     }
 
 	/**
      * Changes the property's value.
      *
-     * @param object $object An object on which the property value will be changed
-     * @param mixed $value Value of the property
+     * @param object An object on which the property value will be changed
      * @return void
      */
-    public function setValue( $object, $value = null )
-    {
-        return $this->forwardCallToReflectionSource( __FUNCTION__, array( $object, $value ) );
-    }
+//    public function setValue( $value )
+//    {
+//        if ( $this->reflectionSource instanceof ReflectionProperty )
+//        {
+//            $this->reflectionSource->setValue( $value );
+//        }
+//        else
+//        {
+//            parent::setValue( $value );
+//        }
+//    }
 
-    /**
-     * Sets whether non-public properties can be requested
+	/**
+     * Use overloading to call additional methods
+     * of the ReflectionProperty instance given to the constructor.
      *
-     * @param boolean $value Whether non-public properties can be requested
-     * @return void
-     * @since PHP 5.3.0
-     */
-    public function setAccessible( $value )
-    {
-        $this->forwardCallToReflectionSource( __FUNCTION__, array( $object, $value ) );
-    }
-
-    /**
-     * Returns a string representation
-     * @return string
-     */
-    public function __toString() {
-        if ( $this->reflectionSource ) {
-            return $this->reflectionSource->__toString();
-        } else {
-            return parent::__toString();
-        }
-    }
-
-    /**
-     * Exports a ReflectionProperty instance.
-     *
-     * Returns the output if TRUE is specified for return, printing it otherwise.
-     * This is purely a wrapper method, which calls the corresponding method of
-     * the parent class.
-     * @param ReflectionClass|string $class
-     *        ReflectionClass object or name of the class
-     * @param ReflectionProperty|string $property
-     *        ReflectionProperty object or name of the class
-     * @param boolean $return
-     *        Whether to return (TRUE) or print (FALSE) the output
+     * @param string $method Method to be called
+     * @param array<integer,mixed> $arguments Arguments that were passed
      * @return mixed
      */
-    public static function export($class, $property, $return = false) {
-        return parent::export($class, $property, $return);
+    public function __call( $method, $arguments )
+    {
+        if ( $this->reflectionSource )
+        {
+            return call_user_func_array( array( $this->reflectionSource, $method ), $arguments );
+        }
+        else
+        {
+            throw new Exception( 'Call to undefined method ' . __CLASS__ . '::' . $method );
+        }
     }
 
 }

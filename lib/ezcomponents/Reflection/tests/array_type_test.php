@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2008 eZ systems as. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  * @version //autogen//
  * @filesource
@@ -8,7 +8,7 @@
  * @subpackage Tests
  */
 
-class ezcReflectionArrayTypeTest extends ezcReflectionPrimitiveTypeTest
+class ezcReflectionArrayTypeTest extends ezcTestCase
 {
     /**
      * @var ezcReflectionArrayType
@@ -20,19 +20,19 @@ class ezcReflectionArrayTypeTest extends ezcReflectionPrimitiveTypeTest
         $this->type = new ezcReflectionArrayType( 'string[]' );
     }
 
-    public function testGetTypeName()
+    public function testGetArrayType()
     {
-        self::assertEquals( 'string[]', $this->type->getTypeName() );
+        $this->assertEquals( new ezcReflectionPrimitiveType( 'string' ), $this->type->getArrayType() );
     }
 
-    public function testGetGetKeyType()
+    public function testGetMapIndexType()
     {
-        $this->assertEquals( new ezcReflectionPrimitiveType( 'integer' ), $this->type->getKeyType() );
+        $this->assertNull( $this->type->getMapIndexType() );
     }
 
-    public function testGetValueType()
+    public function testGetMapValueType()
     {
-        $this->assertEquals( new ezcReflectionPrimitiveType( 'string' ), $this->type->getValueType() );
+        $this->assertNull( $this->type->getMapValueType() );
     }
 
     public function testIsArray()
@@ -40,19 +40,33 @@ class ezcReflectionArrayTypeTest extends ezcReflectionPrimitiveTypeTest
         $this->assertTrue( $this->type->isArray() );
     }
 
+    public function testIsClass()
+    {
+        $this->assertFalse( $this->type->isClass() );
+    }
+
+    public function testIsPrimitive()
+    {
+        $this->assertFalse( $this->type->isPrimitive() );
+    }
+
     public function testIsMap()
     {
         $this->assertFalse( $this->type->isMap() );
     }
 
-    public function testIsScalarType()
+    public function testToString()
     {
-        $this->assertFalse( $this->type->isScalarType() );
+    }
+
+    public function testIsStandardType()
+    {
+        $this->assertFalse( $this->type->isStandardType() );
     }
 
     public function testGetXmlNameWithPrefix()
     {
-        $this->assertEquals( 'tns:ArrayOfstring', $this->type->getXmlName( ) );
+        $this->assertEquals( 'tns:ArrayOfstring', $this->type->getXmlName( true ) );
     }
 
     public function testGetXmlNameWithoutPrefix()

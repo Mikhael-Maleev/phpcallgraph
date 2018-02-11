@@ -90,7 +90,8 @@ class System
     */
     function raiseError($error)
     {
-        if (PEAR::isError($error)) {
+        $pear = new PEAR();
+        if ($pear->isError($error)) {
             $error = $error->getMessage();
         }
         trigger_error($error, E_USER_WARNING);
@@ -183,8 +184,9 @@ class System
     */
     function rm($args)
     {
-        $opts = System::_parseArgs($args, 'rf'); // "f" do nothing but like it :-)
-        if (PEAR::isError($opts)) {
+        $opts = $this->_parseArgs($args, 'rf'); // "f" do nothing but like it :-)
+        $pear = new PEAR();
+        if ($pear->isError($opts)) {
             return System::raiseError($opts);
         }
         foreach($opts[0] as $opt) {
@@ -194,7 +196,8 @@ class System
         }
         $ret = true;
         if (isset($do_recursive)) {
-            $struct = System::_multipleToStruct($opts[1]);
+            $system = new System();
+            $struct = $system->_multipleToStruct($opts[1]);
             foreach($struct['files'] as $file) {
                 if (!@unlink($file)) {
                     $ret = false;
@@ -227,7 +230,8 @@ class System
     function mkDir($args)
     {
         $opts = System::_parseArgs($args, 'pm:');
-        if (PEAR::isError($opts)) {
+        $pear = new PEAR();
+        if ($pear->isError($opts)) {
             return System::raiseError($opts);
         }
         $mode = 0777; // default mode
@@ -363,8 +367,9 @@ class System
     function mktemp($args = null)
     {
         static $first_time = true;
-        $opts = System::_parseArgs($args, 't:d');
-        if (PEAR::isError($opts)) {
+        $opts = $this->_parseArgs($args, 't:d');
+        $pear = new PEAR();
+        if ($pear->isError($opts)) {
             return System::raiseError($opts);
         }
         foreach($opts[0] as $opt) {
@@ -390,7 +395,8 @@ class System
         }
         $GLOBALS['_System_temp_files'][] = $tmp;
         if ($first_time) {
-            PEAR::registerShutdownFunc(array('System', '_removeTmpFiles'));
+            $pear = new PEAR();
+            $pear->registerShutdownFunc(array('System', '_removeTmpFiles'));
             $first_time = false;
         }
         return $tmp;
@@ -407,7 +413,8 @@ class System
         if (count($GLOBALS['_System_temp_files'])) {
             $delete = $GLOBALS['_System_temp_files'];
             array_unshift($delete, '-r');
-            System::rm($delete);
+            $system = new System();
+            $system->rm($delete);
             $GLOBALS['_System_temp_files'] = array();
         }
     }

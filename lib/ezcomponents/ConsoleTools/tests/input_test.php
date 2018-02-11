@@ -5,7 +5,7 @@
  * @package ConsoleTools
  * @subpackage Tests
  * @version //autogentag//
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2009 eZ Systems AS. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  */
 
@@ -1702,11 +1702,7 @@ class ezcConsoleInputTest extends ezcTestCase
             'moretext',
             '-c'            // This one depends on -t, -o, -b and -y
         );
-        $this->commonProcessTestFailure(
-            $args,
-            'ezcConsoleOptionDependencyViolationException',
-            "The option 'console' depends on the option 'original' but this one was not submitted."
-        );
+        $this->commonProcessTestFailure( $args, 'ezcConsoleOptionDependencyViolationException' );
     }
 
     public function testProcessFailureDependencieValues()
@@ -1723,11 +1719,7 @@ class ezcConsoleInputTest extends ezcTestCase
             '-x',
         );
 
-        $this->commonProcessTestFailure(
-            $args,
-            'ezcConsoleOptionDependencyViolationException',
-            "The option 'execute' depends on the option 'yank' to have a value in 'foo, bar' but this one was not submitted."
-        );
+        $this->commonProcessTestFailure( $args, 'ezcConsoleOptionDependencyViolationException' );
     }
     
     public function testProcessFailureExclusions()
@@ -2509,17 +2501,19 @@ class ezcConsoleInputTest extends ezcTestCase
             )
         );
 
-        $res = "Usage: $ {$_SERVER['argv'][0]} [-ö]  [[--] <args>]" . PHP_EOL
-. 'Test with UTF-8' . PHP_EOL
-. 'characters...' . PHP_EOL
-. '' . PHP_EOL
-. '-ö / --öder  ööö äää' . PHP_EOL
-. '             ööö äää' . PHP_EOL
-. '             ööö äää' . PHP_EOL
-. '             ööö äää' . PHP_EOL
-. '             ööö äää' . PHP_EOL
-. '             ööö äää' . PHP_EOL;
+        $res = <<<EOF
+Usage: $ {$_SERVER['argv'][0]} [-ö]  [[--] <args>]
+Test with UTF-8
+characters...
 
+-ö / --öder  ööö äää
+             ööö äää
+             ööö äää
+             ööö äää
+             ööö äää
+             ööö äää
+
+EOF;
         $this->assertEquals(
             $res,
             $input->getHelpText( 'Test with UTF-8 characters...', 20, true ),
@@ -2529,28 +2523,30 @@ class ezcConsoleInputTest extends ezcTestCase
 
     public function testGetHelpText()
     {
-        $res = "Usage: $ {$_SERVER['argv'][0]} [-y <string>] [-e]  [[--] <args>]" . PHP_EOL
-. 'Lala' . PHP_EOL
-. '' . PHP_EOL
-. '-y / --yank  Some' . PHP_EOL
-. '             even' . PHP_EOL
-. '             more' . PHP_EOL
-. '             stupid,' . PHP_EOL
-. '             but' . PHP_EOL
-. '             somewhat' . PHP_EOL
-. '             longer' . PHP_EOL
-. '             long' . PHP_EOL
-. '             describtion.' . PHP_EOL
-. '-e / --edit  Sorry,' . PHP_EOL
-. '             there' . PHP_EOL
-. '             is no' . PHP_EOL
-. '             help' . PHP_EOL
-. '             text' . PHP_EOL
-. '             available' . PHP_EOL
-. '             for' . PHP_EOL
-. '             this' . PHP_EOL
-. '             parameter.' . PHP_EOL;
+        $res = <<<EOF
+Usage: $ {$_SERVER['argv'][0]} [-y <string>] [-e]  [[--] <args>]
+Lala
 
+-y / --yank  Some
+             even
+             more
+             stupid,
+             but
+             somewhat
+             longer
+             long
+             describtion.
+-e / --edit  Sorry,
+             there
+             is no
+             help
+             text
+             available
+             for
+             this
+             parameter.
+
+EOF;
         $this->assertEquals(
             $res,
             $this->input->getHelpText( 'Lala', 20, true, array( 'e', 'y' ) ),
@@ -2862,7 +2858,7 @@ class ezcConsoleInputTest extends ezcTestCase
         $this->assertTrue( count( array_diff( $res, $values ) ) == 0, 'Parameters processed incorrectly.' );
     }
     
-    private function commonProcessTestFailure( $args, $exceptionClass, $message = null )
+    private function commonProcessTestFailure( $args, $exceptionClass )
     {
         try 
         {
@@ -2875,15 +2871,6 @@ class ezcConsoleInputTest extends ezcTestCase
                 get_class( $e ),
                 'Wrong exception thrown for invalid parameter submission. Expected class <'.$exceptionClass.'>, received <'.get_class( $e ).'>'
             );
-
-            if ( $message !== null )
-            {
-                $this->assertEquals(
-                    $message,
-                    $e->getMessage(),
-                    'Exception message incorrect.'
-                );
-            }
             return;
         }
         $this->fail( 'Exception not thrown for invalid parameter submition.' );

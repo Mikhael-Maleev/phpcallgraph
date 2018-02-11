@@ -2,7 +2,7 @@
 /**
  * Autoloader definition for the ConsoleTools component.
  *
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2009 eZ Systems AS. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  * @version //autogentag//
  * @filesource
@@ -37,7 +37,6 @@ return array(
     'ezcConsoleQuestionDialogValidator'             => 'ConsoleTools/interfaces/question_dialog_validator.php',
     'ezcConsoleDialog'                              => 'ConsoleTools/interfaces/dialog.php',
     'ezcConsoleDialogOptions'                       => 'ConsoleTools/options/dialog.php',
-    'ezcConsoleInputHelpGenerator'                  => 'ConsoleTools/interfaces/input_help_generator.php',
     'ezcConsoleInputValidator'                      => 'ConsoleTools/interfaces/input_validator.php',
     'ezcConsoleMenuDialogValidator'                 => 'ConsoleTools/interfaces/menu_dialog_validator.php',
     'ezcConsoleQuestionDialogCollectionValidator'   => 'ConsoleTools/dialog/validators/question_dialog_collection.php',
@@ -45,7 +44,6 @@ return array(
     'ezcConsoleArguments'                           => 'ConsoleTools/input/arguments.php',
     'ezcConsoleDialogViewer'                        => 'ConsoleTools/dialog_viewer.php',
     'ezcConsoleInput'                               => 'ConsoleTools/input.php',
-    'ezcConsoleInputStandardHelpGenerator'          => 'ConsoleTools/input/help_generators/standard.php',
     'ezcConsoleMenuDialog'                          => 'ConsoleTools/dialog/menu_dialog.php',
     'ezcConsoleMenuDialogDefaultValidator'          => 'ConsoleTools/dialog/validators/menu_dialog_default.php',
     'ezcConsoleMenuDialogOptions'                   => 'ConsoleTools/options/menu_dialog.php',
@@ -72,5 +70,7 @@ return array(
     'ezcConsoleTableCell'                           => 'ConsoleTools/table/cell.php',
     'ezcConsoleTableOptions'                        => 'ConsoleTools/options/table.php',
     'ezcConsoleTableRow'                            => 'ConsoleTools/table/row.php',
+    'ezcConsoleInputHelpGenerator'                  => 'ConsoleTools/interfaces/input_help_generator.php',
+    'ezcConsoleStandardInputHelpGenerator'          => 'ConsoleTools/input/help_generators/standard.php',
 );
 ?>

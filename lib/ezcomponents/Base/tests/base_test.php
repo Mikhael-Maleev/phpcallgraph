@@ -3,7 +3,7 @@
  * @package Base
  * @subpackage Tests
  * @version //autogentag//
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2009 eZ Systems AS. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  */
 /**
@@ -415,12 +415,6 @@ class ezcBaseTest extends ezcTestCase
         }
     }
 
-    public function testNoPrefixAutoload2()
-    {
-        ezcBase::addClassRepository( './Base/tests/issue15896' );
-        __autoload( 'ab' );
-    }
-
     public function testCheckDependencyExtension()
     {
         ezcBase::checkDependency( 'Tester', ezcBase::DEP_PHP_EXTENSION, 'standard' );
@@ -441,7 +435,7 @@ class ezcBaseTest extends ezcTestCase
         catch ( ezcBaseAutoloadException $e )
         {
             $cwd = getcwd();
-            self::assertEquals( "Could not find a class to file mapping for 'ezcNoSuchClass'. Searched for no_such_autoload.php, no_autoload.php, autoload.php in: $cwd/autoload, $cwd/autoload, $cwd/autoload, $cwd/Base/tests/test_repository/autoload_files, $cwd/Base/tests/test_repository/autoload_files, $cwd/Base/tests/extra_repository/autoload, $cwd/Base/tests/test_repository/autoload_files, $cwd/Base/tests/test_repository/autoload_files, $cwd/Base/tests/issue15896/autoload", $e->getMessage() );
+            self::assertEquals( "Could not find a class to file mapping for 'ezcNoSuchClass'. Searched for no_such_autoload.php, no_autoload.php, autoload.php in: $cwd/autoload, $cwd/autoload, $cwd/autoload, $cwd/Base/tests/test_repository/autoload_files, $cwd/Base/tests/test_repository/autoload_files, $cwd/Base/tests/extra_repository/autoload, $cwd/Base/tests/test_repository/autoload_files, $cwd/Base/tests/test_repository/autoload_files", $e->getMessage() );
         }
     }
 

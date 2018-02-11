@@ -56,7 +56,7 @@ class staticReflectionMethod
     /**
      * @var 
      */
-    public $class;
+    public $rclass;
 
     /**
      * 

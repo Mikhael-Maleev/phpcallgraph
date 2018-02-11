@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2008 eZ systems as. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  * @version //autogen//
  * @filesource
@@ -26,28 +26,28 @@ class ReflectionTestHelper {
     }
 
     /**
-     * Checks if all expected annotations and only these are set
+     * Checks if all expected tags and only these are set
      *
-     * @param string[] $expectedAnnotations
-     * @param ezcReflectionAnnotation[] $annotations
+     * @param string[] $expectedTags
+     * @param ezcReflectionDocTag[] $tags
      * @param ezcTestCase $test
      */
-    static public function expectedAnnotations($expectedAnnotations, $annotations, $test) {
-        foreach ($annotations as $annotation) {
-            $test->assertType('ezcReflectionAnnotation', $annotation);
-            $test->assertContains($annotation->getName(), $expectedAnnotations);
+    static public function expectedTags($expectedTags, $tags, $test) {
+        foreach ($tags as $tag) {
+            $test->assertType('ezcReflectionDocTag', $tag);
+            $test->assertContains($tag->getName(), $expectedTags);
 
-            self::deleteFromArray($annotation->getName(), $expectedAnnotations);
+            self::deleteFromArray($tag->getName(), $expectedTags);
         }
-        $test->assertEquals(0, count($expectedAnnotations));
+        $test->assertEquals(0, count($expectedTags));
     }
 
 
     /**
      * Checks if all expected parameters and only these are set
      *
-     * @param string[] $expectedAnnotations
-     * @param ezcReflectionAnnotation[] $annotations
+     * @param string[] $expectedTags
+     * @param ezcReflectionDocTag[] $tags
      * @param ezcTestCase $test
      */
     static public function expectedParams($expectedParams, $params, $test) {

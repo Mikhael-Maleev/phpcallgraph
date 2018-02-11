@@ -4,7 +4,7 @@
  *
  * @package Reflection
  * @version //autogen//
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2008 eZ systems as. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  */
 
@@ -19,30 +19,6 @@
  */
 class ezcReflectionTypeMapper
 {
-
-    // scalar types
-    const CANONICAL_NAME_BOOLEAN  = 'boolean';
-    const CANONICAL_NAME_INTEGER  = 'integer';
-    const CANONICAL_NAME_FLOAT    = 'float';
-    const CANONICAL_NAME_STRING   = 'string';
-    
-    // compound types
-    const CANONICAL_NAME_ARRAY    = 'array';
-    const CANONICAL_NAME_OBJECT   = 'object';
-    
-    // special types
-    const CANONICAL_NAME_RESOURCE = 'resource';
-    const CANONICAL_NAME_NULL     = 'NULL';
-    
-    // pseudo-types for readability reasons
-    const CANONICAL_NAME_MIXED    = 'mixed';
-    const CANONICAL_NAME_CALLBACK = 'callback';
-    const CANONICAL_NAME_NUMBER   = 'number';
-    
-    // regular expressions for complex array notations
-    const REGEXP_TYPE_NAME_LIST = '/^(.+)\[\]$/';
-    const REGEXP_TYPE_NAME_MAP  = '/^array\s*\((\S+?)=>(\S+)\)$/';
-
     /**
      * @var ezcReflectionTypeMapper
      */
@@ -82,37 +58,45 @@ class ezcReflectionTypeMapper
      */
     protected function initMappingTable()
     {
-        $this->mappingTable['int']     = self::CANONICAL_NAME_INTEGER;
-        $this->mappingTable['integer'] = self::CANONICAL_NAME_INTEGER;
-        $this->mappingTable['long']    = self::CANONICAL_NAME_INTEGER;
-        $this->mappingTable['short']   = self::CANONICAL_NAME_INTEGER;
-        $this->mappingTable['byte']    = self::CANONICAL_NAME_INTEGER;
+        $boolean = 'boolean';
+        $integer = 'integer';
+        $float   = 'float';
+        $string  = 'string';
+        $array   = 'array';
+        $mixed   = 'mixed';
+        $void    = 'void';
+        $object  = 'object';
 
-        $this->mappingTable['boolean'] = self::CANONICAL_NAME_BOOLEAN;
-        $this->mappingTable['bool']    = self::CANONICAL_NAME_BOOLEAN;
-        $this->mappingTable['true']    = self::CANONICAL_NAME_BOOLEAN;
-        $this->mappingTable['false']   = self::CANONICAL_NAME_BOOLEAN;
+        $this->mappingTable['int']     = $integer;
+        $this->mappingTable['integer'] = $integer;
+        $this->mappingTable['long']    = $integer;
+        $this->mappingTable['short']   = $integer;
+        $this->mappingTable['byte']    = $integer;
 
-        $this->mappingTable['float']   = self::CANONICAL_NAME_FLOAT;
-        $this->mappingTable['double']  = self::CANONICAL_NAME_FLOAT;
+        $this->mappingTable['boolean'] = $boolean;
+        $this->mappingTable['bool']    = $boolean;
+        $this->mappingTable['true']    = $boolean;
+        $this->mappingTable['false']   = $boolean;
 
-        $this->mappingTable['string']  = self::CANONICAL_NAME_STRING;
-        $this->mappingTable['char']    = self::CANONICAL_NAME_STRING;
+        $this->mappingTable['float']   = $float;
+        $this->mappingTable['double']  = $float;
 
-        $this->mappingTable['array']   = self::CANONICAL_NAME_ARRAY;
-        $this->mappingTable['mixed']   = self::CANONICAL_NAME_MIXED;
-        $this->mappingTable['void']    = self::CANONICAL_NAME_NULL;
-        $this->mappingTable['null']    = self::CANONICAL_NAME_NULL;
-        $this->mappingTable['object']  = self::CANONICAL_NAME_OBJECT;
+        $this->mappingTable['string']  = $string;
+        $this->mappingTable['char']    = $string;
+
+        $this->mappingTable['array']   = $array;
+        $this->mappingTable['mixed']   = $mixed;
+        $this->mappingTable['void']    = $void;
+        $this->mappingTable['object']  = $object;
 
         /*
         XML Schema Part 2 - Datatypes Second Edition (24 Oktober 2004):
-            boolean has the 'value space' required to support the mathematical
+            boolean has the ·value space· required to support the mathematical
             concept of binary-valued logic: {true, false}.
-            An instance of a datatype that is defined as 'boolean' can have the
+            An instance of a datatype that is defined as ·boolean· can have the
             following legal literals {true, false, 1, 0}.
         */
-        $this->xmlMappingTable[self::CANONICAL_NAME_BOOLEAN] = 'boolean';
+        $this->xmlMappingTable[$boolean] = 'boolean';
 
         /*
         PHP Manual:
@@ -127,10 +111,10 @@ class ezcReflectionTypeMapper
             [...]
             boundaries of integer (usually +/- 2.15e+9 = 2^31)
         XML Schema Part 2 - Datatypes Second Edition (24 Oktober 2004):
-            int is 'derived' from long by setting the value of 'maxInclusive'
-            to be 2147483647 and 'minInclusive' to be -2147483648.
+            int is ·derived· from long by setting the value of ·maxInclusive·
+            to be 2147483647 and ·minInclusive· to be -2147483648.
         */
-        $this->xmlMappingTable[self::CANONICAL_NAME_INTEGER] = 'int';
+        $this->xmlMappingTable[$integer] = 'int';
 
         /*
         PHP Manual:
@@ -144,51 +128,46 @@ class ezcReflectionTypeMapper
             The double datatype is patterned after the IEEE double-precision
             64-bit floating point type [IEEE 754-1985].
         */
-        //$this->xmlMappingTable[self::CANONICAL_NAME_FLOAT]   = 'float';
-        $this->xmlMappingTable[self::CANONICAL_NAME_FLOAT]   = 'double'; // according to the PHP Manual `double' seems to be appropriate
+        //$this->xmlMappingTable[$float]   = 'float';
+        $this->xmlMappingTable[$float]   = 'double'; // according to the PHP Manual `double' seems to be appropriate
 
         /*
         XML Schema Part 2 - Datatypes Second Edition (24 Oktober 2004):
             The string datatype represents character strings in XML.
         */
-        $this->xmlMappingTable[self::CANONICAL_NAME_STRING]  = 'string';
-
-        $this->xmlMappingTable[self::CANONICAL_NAME_MIXED]   = 'any';
+        $this->xmlMappingTable[$string]  = 'string';
     }
 
     /**
-     * Maps a type to a canonical type name
-     * @param string $typeName
+     * Maps a type to a standard type name
+     * @param string $type
      * @return string
      */
-    public function getTypeName( $typeName ) {
-        $typeName = trim( $typeName );
-        if ( isset( $this->mappingTable[ strtolower( $typeName ) ] ) )
-        {
-            return $this->mappingTable[ strtolower( $typeName ) ];
+    public function getType($type) {
+        if (isset($this->mappingTable[strtolower($type)])) {
+            return $this->mappingTable[strtolower($type)];
         }
-        else
-        {
-            return $typeName;
+        else {
+            return $type;
         }
     }
 
     /**
      * Maps a typename to the name of the correspondent XML Schema datatype
-     * @param string $typeName
+     * @param string $type
      * @return string
      */
-    public function getXmlType($typeName) {
-        if (isset($this->xmlMappingTable[$typeName])) {
+    public function getXmlType($type) {
+        if (isset($this->xmlMappingTable[$type])) {
             // it is assumed that the method is mostly called
             // with the standard name of the type
-            return $this->xmlMappingTable[$typeName];
+            return $this->xmlMappingTable[$type];
         }
         else {
             // try to obtain the standard name for the type
-            $typeName = $this->getTypeName($typeName);
-            if (isset($this->xmlMappingTable[$typeName])) {
-                return $this->xmlMappingTable[$typeName];
+            $type = $this->getType($type);
+            if (isset($this->xmlMappingTable[$type])) {
+                return $this->xmlMappingTable[$type];
             }
             else {
                 return null;
@@ -197,103 +176,44 @@ class ezcReflectionTypeMapper
     }
 
     /**
-     * Tests whether the given type is a scalar type.
-     * 
-     * The types integer, float, string, and boolean are considered to be
-     * scalar.
-     * 
-     * The types array, object, resource, NULL, mixed, number, and callback are
-     * not scalar.
-     * 
-     * @param String $typeName
-     * @return Boolean
-     */
-    public function isScalarType( $typeName )
-    {
-        $typeName = $this->getTypeName( $typeName ); 
-        if (
-            $typeName == self::CANONICAL_NAME_BOOLEAN
-            or $typeName == self::CANONICAL_NAME_INTEGER
-            or $typeName == self::CANONICAL_NAME_FLOAT
-            or $typeName == self::CANONICAL_NAME_STRING
-        )
-        {
-            return true;
-        }
-        return false;
-    }
-    
-    /**
-     * Tests whether the given type is a special type.
-     * 
-     * Only the types NULL and resource are considered to be special types.
-     * 
-     * @param String $typeName
-     * @return Boolean
-     */
-    public function isSpecialType( $typeName )
-    {
-        $typeName = $this->getTypeName( $typeName ); 
-        if (
-            $typeName == self::CANONICAL_NAME_NULL
-            or $typeName == self::CANONICAL_NAME_RESOURCE
-        )
-        {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Test whether the given type is an array or hash map
-     * 
-     * @param string $typeName
+     * Tests whether the given type is a primitive type
+     * @param string $type
      * @return boolean
      */
-    public function isArray( $typeName )
-    {
-        $typeName = $this->getTypeName( $typeName );
-        if ( strlen( $typeName ) > 0 )
-        {
-            // last two chars are [], thus it should be something like string[]
-            //if ( strlen( $typeName ) > 2 and substr( $typeName, -2 ) == '[]' )
-            if ( preg_match( self::REGEXP_TYPE_NAME_LIST, $typeName ) )
-            {
-                return true;
-            }
-            
-            // may be the author just wrote 'array'
-            elseif ( $typeName == self::CANONICAL_NAME_ARRAY )
-            {
-                return true;
-            }
-
-        	// test for array map types array(int=>float)
-            elseif ( preg_match( self::REGEXP_TYPE_NAME_MAP, $typeName ) )
-            {
-                return true;
-            }
+    public function isPrimitive($type) {
+        if ($this->getType($type) != 'array' and
+                isset($this->mappingTable[strtolower($type)])) {
+            return true;
         }
         return false;
     }
 
     /**
-     * Tests whether the given type is described as mixed, number, or callback.
-     * 
-     * @param string $typeName
+     * Test whether the given type is an array or array map
+     * @param string $type
      * @return boolean
      */
-    public function isMixed( $typeName )
-    {
-        $typeName = $this->getTypeName( $typeName ); 
-        if (
-            $typeName == self::CANONICAL_NAME_MIXED
-            or $typeName == self::CANONICAL_NAME_NUMBER
-            or $typeName == self::CANONICAL_NAME_CALLBACK
-            or preg_match( '/^.+\|.+$/', $typeName )
-        )
-        {
-            return true;
+    public function isArray($type) {
+        $type = trim($type);
+        if (strlen($type) > 0) {
+            //last char is ] so it should be something like array[]
+            if ($type{strlen($type)-1} == ']') {
+                return true;
+            }
+            //my be the author just wrote 'array'
+            if ($type == 'array') {
+                return true;
+            }
+
+            //test for array map types array<int,int>
+            //@TODO Remove support for array<int, int> definitions
+            elseif (preg_match('/(.*)(<(.*?)(,(.*?))?>)/', $type)) {
+                return true;
+            }
+        	//test for array map types array(int=>int)
+            elseif (preg_match('/(.*)(\((.*?)(=>(.*?))?\))/', $type)) {
+                return true;
+            }
         }
         return false;
     }

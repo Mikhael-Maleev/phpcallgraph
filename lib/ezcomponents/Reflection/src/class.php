@@ -4,13 +4,13 @@
  *
  * @package Reflection
  * @version //autogen//
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2008 eZ systems as. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  */
 
 /**
- * Extends the ReflectionClass class to provide type information
- * using PHPDoc annotations.
+ * Extends the ReflectionClass using PHPDoc comments to provide
+ * type information
  *
  * @package Reflection
  * @version //autogen//
@@ -20,100 +20,76 @@
 class ezcReflectionClass extends ReflectionClass
 {
     /**
-     * @var ezcReflectionDocCommentParser Parser for source code annotations
+     * @var ezcReflectionDocParser Parser for source code annotations
      */
-    protected $docParser;
+  static public $docParser;
 
     /**
      * @var string|object|ReflectionClass
      *      Name, instance or ReflectionClass object of the class to be
      *      reflected
      */
-    protected $reflectionSource;
+    static public $rclass;
 
     /**
-     * Constructs a new ezcReflectionClass object.
+     * Constructs a new ezcReflectionClass object
      *
      * @param string|object|ReflectionClass $argument
      *        Name, instance or ReflectionClass object of the class to be
      *        reflected
-     * @throws ReflectionException if the specified class doesn't exist
      */
     public function __construct( $argument )
     {
-        if ( !$argument instanceof parent )
+        if ( !$argument instanceof ReflectionClass )
         {
             parent::__construct( $argument );
         }
-        $this->reflectionSource = $argument;
-        // TODO: Parse comment on demand to save CPU time and memory
-        $this->docParser = ezcReflection::getDocCommentParser();
+        $this->rclass = $argument;
+        $this->docParser = ezcReflectionApi::getDocParserInstance();
         $this->docParser->parse( $this->getDocComment() );
     }
+  /**
+   * All property accessible from outside but readonly
+   * if property does not exist return null
+   *
+   * @param string $name
+   *
+   * @return mixed|null
+   */
+  public function __get ($name) {
+    return ($this->{$name}) ? $this->{$name} : null;
+  }
+
+  /**
+   * __set trap, property not writeable
+   *
+   * @param string $name
+   * @param mixed $value
+   *
+   * @return mixed
+   */
+  function __set ($name, $value) {
+    $this->{$name} = $value;
+    return  $value;
+  }
+
 
     /**
      * Use overloading to call additional methods
-     * of the ReflectionClass instance given to the constructor.
+     * of the ReflectionClass instance given to the constructor
      *
      * @param string $method Method to be called
-     * @param array  $arguments Arguments that were passed
+     * @param array<integer, mixed> $arguments Arguments that were passed
      * @return mixed
      */
     public function __call( $method, $arguments )
     {
-        $callback = array( $this->reflectionSource, $method );  
-        if ( $this->reflectionSource instanceof parent
-             and is_callable( $callback ) )
+        if ( $this->rclass instanceof ReflectionClass )
         {
             // query external reflection object
-            return call_user_func_array( $callback, $arguments );
-        }
-        else
-        {
-            throw new ezcReflectionCallToUndefinedMethodException( __CLASS__, $method );
-        }
-    }
-public function __get ( $name )
-{
-        if ($name === "class")
-        {
-               return $this->reflectionSource;
-        }
-}
-
-public function __set ( $name , $value )
-{
-        if ($name === "class")
-        {
-                $this->reflectionSource= $value;
-        }
-}
-
-    /**
-     * Forwards a method invocation to either the reflection source passed to
-     * the constructor of this class when creating an instance or to the parent
-     * class.
-     *
-     * This method is part of the dependency injection mechanism and serves as
-     * a helper for implementing wrapper methods without code duplication.
-     * @param string $method Name of the method to be invoked
-     * @param mixed[] $arguments Arguments to be passed to the method
-     * @return mixed Return value of the invoked method
-     */
-    protected function forwardCallToReflectionSource( $method, $arguments = array() ) {
-        if ( $this->reflectionSource instanceof parent ) {
-            return call_user_func_array( array( $this->reflectionSource, $method ), $arguments );
+            return call_user_func_array( array($this->rclass, $method), $arguments );
         } else {
-            //*
-            return call_user_func_array( array( $this, 'parent::' . $method ), $arguments );
-            /*/
-            $argumentStrings = array();
-            foreach ( array_keys( $arguments ) as $key ) {
-                $argumentStrings[] = '$arguments[' . var_export( $key, true ) . ']';
-            }
-            $cmd = 'return parent::$method( ' . implode( ', ', $argumentStrings ) . ' );';
-            return eval( $cmd );
-            //*/
+            throw new Exception( 'Call to undefined method ' . __CLASS__ . '::' . $method );
         }
     }
 
@@ -122,15 +98,13 @@ public function __set ( $name , $value )
      *
      * @param string $name Name of the method
      * @return ezcReflectionMethod
-     * @throws ReflectionException if method doesn't exist
      */
-    public function getMethod( $name ) {
-        $method = $this->forwardCallToReflectionSource( __FUNCTION__, array( $name ) );
-        if ( $this->reflectionSource instanceof parent ) {
-            return new ezcReflectionMethod( $this, $method );
-        } else {
-            return new ezcReflectionMethod( $this, $method->name );
-        }
+    public function getMethod($name) {
+    	if ( $this->rclass instanceof ReflectionClass ) {
+    		return new ezcReflectionMethod($this->rclass->getMethod($name));
+    	} else {
+    		return new ezcReflectionMethod(parent::getMethod($name));
+    	}
     }
 
     /**
@@ -139,13 +113,15 @@ public function __set ( $name , $value )
      * @return ezcReflectionMethod
      */
     public function getConstructor() {
-        $constructor = $this->forwardCallToReflectionSource( __FUNCTION__ );
+        if ($this->rclass instanceof ReflectionClass) {
+            // query external reflection object
+            $constructor = $this->rclass->getConstructor();
+        } else {
+            $constructor = parent::getConstructor();
+        }
+
         if ($constructor != null) {
-            if ( $this->reflectionSource instanceof parent ) {
-                return new ezcReflectionMethod( $this, $constructor );
-            } else {
-                return new ezcReflectionMethod( $this, $constructor->name );
-            }
+            return new ezcReflectionMethod($constructor);
         } else {
             return null;
         }
@@ -164,15 +140,15 @@ public function __set ( $name , $value )
      *        ReflectionMethod::IS_FINAL
      * @return ezcReflectionMethod[]
      */
-    public function getMethods( $filter = -1 ) {
-        $methods = $this->forwardCallToReflectionSource( __FUNCTION__, array( $filter ) );
+    public function getMethods($filter = -1) {
         $extMethods = array();
-        foreach ( $methods as $method ) {
-            if ( $this->reflectionSource instanceof parent ) {
-                $extMethods[] = new ezcReflectionMethod( $this, $method );
-            } else {
-                $extMethods[] = new ezcReflectionMethod( $this, $method->name );
-            }
+        if ( $this->rclass instanceof ReflectionClass ) {
+            $methods = $this->rclass->getMethods($filter);
+        } else {
+            $methods = parent::getMethods($filter);
+        }
+        foreach ($methods as $method) {
+            $extMethods[] = new ezcReflectionMethod($method);
         }
         return $extMethods;
     }
@@ -183,10 +159,15 @@ public function __set ( $name , $value )
      * @return ezcReflectionClass[]
      */
     public function getInterfaces() {
-        $ifaces = $this->forwardCallToReflectionSource( __FUNCTION__ );
+    	if ( $this->rclass instanceof ReflectionClass ) {
+    		$ifaces = $this->rclass->getInterfaces();
+    	} else {
+    		$ifaces = parent::getInterfaces();
+    	}
+
     	$result = array();
     	foreach ($ifaces as $i) {
-    		$result[] = new ezcReflectionClass( $i );
+    		$result[] = new ezcReflectionClassType($i); //TODO: Shouldn't this be eczReflectionClass
     	}
     	return $result;
     }
@@ -194,29 +175,48 @@ public function __set ( $name , $value )
     /**
      * Returns the class' parent class, or, if none exists, FALSE
      *
-     * @return ezcReflectionClass|boolean
+     * @return ezcReflectionClassType|boolean
      */
     public function getParentClass()
     {
-        $parentClass = $this->forwardCallToReflectionSource( __FUNCTION__ );
-        if ( is_object( $parentClass ) ) {
-            return new ezcReflectionClass( $parentClass );
+        if ( $this->rclass instanceof ReflectionClass )
+        {
+            // query external reflection object
+            $parentClass = $this->rclass->getParentClass();
+        } else {
+            $parentClass = parent::getParentClass();
+        }
+
+        if (is_object($parentClass)) {
+            return new ezcReflectionClassType($parentClass);
         }
         else {
-            return false;
+            return null;
         }
     }
 
     /**
      * Returns the class' property specified by its name
      *
-     * @param string $name Name of the property
+     * @param string $name
      * @return ezcReflectionProperty
-     * @throws RelectionException if property doesn't exist
+     * @throws RelectionException if property doesn't exists
      */
     public function getProperty($name) {
-        $prop = $this->forwardCallToReflectionSource( __FUNCTION__, array( $name ) );
-        return new ezcReflectionProperty($prop, $name);
+		if ( $this->rclass instanceof ReflectionClass )
+        {
+            // query external reflection object
+            $prop = $this->rclass->getProperty($name);
+        } else {
+            $prop = parent::getProperty($name);
+        }
+
+		if (is_object($prop) && !($prop instanceof ezcReflectionProperty)) {
+			return new ezcReflectionProperty($prop, $name);
+        } else {
+			// TODO: may be we should throw an exception here
+            return $prop;
+        }
     }
 
     /**
@@ -231,7 +231,13 @@ public function __set ( $name , $value )
      * @return ezcReflectionProperty[] Properties of the class
      */
     public function getProperties($filter = -1) {
-        $props = $this->forwardCallToReflectionSource( __FUNCTION__, array( $filter ) );
+        if ( $this->rclass instanceof ReflectionClass ) {
+        	$props = $this->rclass->getProperties($filter);
+        } else {
+            //TODO: return ezcReflectionProperty[]
+        	$props = parent::getProperties($filter);
+        }
+
         $extProps = array();
         foreach ($props as $prop) {
             $extProps[] = new ezcReflectionProperty( $prop );
@@ -244,7 +250,6 @@ public function __set ( $name , $value )
      * documentation
      *
      * @return string short description of the class
-     * @since PHP 5.1.0
      */
     public function getShortDescription() {
         return $this->docParser->getShortDescription();
@@ -255,7 +260,6 @@ public function __set ( $name , $value )
      * documentation
      *
      * @return string Long description of the class
-     * @since PHP 5.1.0
      */
     public function getLongDescription() {
         return $this->docParser->getLongDescription();
@@ -266,25 +270,23 @@ public function __set ( $name , $value )
      *
      * @param string $annotation Name of the annotation
      * @return boolean
-     * @since PHP 5.1.0
      */
-    public function hasAnnotation($annotation) {
-        return $this->docParser->hasAnnotation($annotation);
+    public function isTagged($annotation) {
+        return $this->docParser->isTagged($annotation);
     }
 
     /**
      * Returns an array of annotations (optinally only annotations of a given name)
      *
      * @param string $name Name of the annotations
-     * @return ezcReflectionAnnotation[] Annotations
-     * @since PHP 5.1.0
+     * @return ezcReflectionDocTag[] Annotations
      */
-    public function getAnnotations( $name = '' ) {
-        if ( $name == '' ) {
-            return $this->docParser->getAnnotations();
+    public function getTags($name = '') {
+        if ($name == '') {
+            return $this->docParser->getTags();
         }
         else {
-            return $this->docParser->getAnnotationsByName($name);
+            return $this->docParser->getTagsByName($name);
         }
     }
 
@@ -294,7 +296,12 @@ public function __set ( $name , $value )
      * @return ezcReflectionExtension
      */
     public function getExtension() {
-        $ext = $this->forwardCallToReflectionSource( __FUNCTION__ );
+    	if ( $this->rclass instanceof ReflectionClass ) {
+    		$ext = $this->rclass->getExtension();
+    	} else {
+    		$ext = parent::getExtension();
+    	}
+
         if ($ext) {
             return new ezcReflectionExtension($ext);
         } else {
@@ -302,458 +309,76 @@ public function __set ( $name , $value )
         }
     }
 
-
-    // only pure wrapper methods follow bellow this line
-
     /**
      * Returns FALSE or the name of the extension the class belongs to
      *
-     * This is purely a wrapper method, which either calls the corresponding
+     * This is purely a wrapper method which either calls the corresponding
      * method of the parent class or forwards the call to the ReflectionClass
      * instance passed to the constructor.
      * @return string|boolean Extension name or FALSE
      */
     public function getExtensionName() {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
+    	if ( $this->rclass instanceof ReflectionClass ) {
+            // query external reflection object
+    		$extensionName = $this->rclass->getExtensionName();
+    	} else {
+    		$extensionName = parent::getExtensionName();
+    	}
+        return $extensionName;
     }
 
     /**
      * Returns the name of the class.
      *
-     * This is purely a wrapper method, which either calls the corresponding
+     * This is purely a wrapper method which either calls the corresponding
      * method of the parent class or forwards the call to the ReflectionClass
      * instance passed to the constructor.
      * @return string Class name
      */
     public function getName() {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
+        if ( $this->rclass instanceof ReflectionClass )
+        {
+            // query external reflection object
+            $name = $this->rclass->getName();
+        } else {
+            $name = parent::getName();
+        }
+        return $name;
     }
 
     /**
      * Returns the doc comment for the class.
      *
-     * This is purely a wrapper method, which either calls the corresponding
+     * This is purely a wrapper method which either calls the corresponding
      * method of the parent class or forwards the call to the ReflectionClass
      * instance passed to the constructor.
      * @return string Doc comment
-     * @since PHP 5.1.0
      */
     public function getDocComment() {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
+        if ( $this->rclass instanceof ReflectionClass )
+        {
+            // query external reflection object
+            $comment = $this->rclass->getDocComment();
+        } else {
+            $comment = parent::getDocComment();
+        }
+        return $comment;
     }
 
     /**
-     * Returns the class' constant specified by its name
+     * Exports a reflection object.
      *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @param string $name Name of the constant
-     * @return mixed
-     */
-    public function getConstant( $name ) {
-        return $this->forwardCallToReflectionSource( __FUNCTION__, array( $name ) );
-    }
-
-    /**
-     * Returns an associative array containing this class' constants and their
-     * values.
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @return array<string, mixed> Constants and their values
-     */
-    public function getConstants() {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
-    }
-
-    /**
-     * Returns an associative array containing copies of all default property
-     * values of the class.
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @return array<string, mixed> Copies of all default property values
-     */
-    public function getDefaultProperties() {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
-    }
-
-    /**
-     * Returns the line this class' declaration ends at
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @return integer Line this class' declaration ends at
-     */
-    public function getEndLine() {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
-    }
-
-    /**
-     * Returns the filename of the file this class was declared in
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @return string The filename of the file this class was declared in
-     */
-    public function getFileName() {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
-    }
-
-    /**
-     * Returns an array of names of interfaces this class implements
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @return string[] Array of names of interfaces this class implements
-     */
-    public function getInterfaceNames() {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
-    }
-
-    /**
-     * Returns a bitfield of the access modifiers for this class
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @return integer Bitfield of the access modifiers for this method
-     */
-    public function getModifiers() {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
-    }
-
-    /**
-     * Returns the line this class' declaration starts at
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @return integer The line this class' declaration starts at
-     */
-    public function getStartLine() {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
-    }
-
-    /**
-     * Returns an associative array containing all static property values of
-     * the class
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @return array<string,mixed>
-     *         An associative array containing all static property values of
-     *         the class
-     */
-    public function getStaticProperties() {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
-    }
-
-    /**
-     * Returns the value of a static property
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @param string $name Name of the static property
-     * @param mixed $default Default value
-     * @return mixed Value of a static property
-     * @since PHP 5.1.0
-     */
-    public function getStaticPropertyValue( $name, $default = null ) {
-        return $this->forwardCallToReflectionSource( __FUNCTION__, array( $name, $default ) );
-    }
-
-    /**
-     * Returns whether a constant exists or not
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @param string $name Name of the constant
-     * @return boolean Whether a constant exists or not
-     * @since PHP 5.1.0
-     */
-    public function hasConstant( $name ) {
-        return $this->forwardCallToReflectionSource( __FUNCTION__, array( $name ) );
-    }
-
-    /**
-     * Returns whether a method exists or not
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @param string $name Name of the method
-     * @return boolean Whether a method exists or not
-     * @since PHP 5.1.0
-     */
-    public function hasMethod( $name ) {
-        return $this->forwardCallToReflectionSource( __FUNCTION__, array( $name ) );
-    }
-
-    /**
-     * Returns whether a property exists or not
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @param string $name Name of the property
-     * @return boolean Whether a property exists or not
-     * @since PHP 5.1.0
-     */
-    public function hasProperty( $name ) {
-        return $this->forwardCallToReflectionSource( __FUNCTION__, array( $name ) );
-    }
-
-    /**
-     * Returns whether this class is a subclass of another class
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @param string|ReflectionClass $class
-     *        Name or ReflectionClass object of the super class
-     * @return boolean Whether this class is a subclass of the given super lass
-     */
-    public function isSubclassOf( $class ) {
-        return $this->forwardCallToReflectionSource( __FUNCTION__, array( $class ) );
-    }
-
-    /**
-     * Returns whether this class implements a given interface
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @param string|ReflectionClass $interface
-     *        Name or ReflectionClass object of the interface
-     * @return boolean Whether the given interface is implemented or not
-     */
-    public function implementsInterface( $interface ) {
-        return $this->forwardCallToReflectionSource( __FUNCTION__, array( $interface ) );
-    }
-
-    /**
-     * Returns whether this class is abstract
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @return boolean Whether this class is abstract
-     */
-    public function isAbstract() {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
-    }
-
-    /**
-     * Returns whether this class is final
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @return boolean Whether this class is final
-     */
-    public function isFinal() {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
-    }
-
-    /**
-     * Returns whether this class is instantiable
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @return boolean Whether this class is instantiable
-     */
-    public function isInstantiable() {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
-    }
-
-    /**
-     * Returns whether this class is an interface
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @return boolean Whether this class is an interface
-     */
-    public function isInterface() {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
-    }
-
-    /**
-     * Returns whether this class is an internal class
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @return boolean Whether this class is an internal class
-     */
-    public function isInternal() {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
-    }
-
-    /**
-     * Returns whether this class is iterateable (can be used inside foreach)
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @return boolean
-     *         Whether this class is iterateable (can be used inside foreach)
-     */
-    public function isIterateable() {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
-    }
-
-    /**
-     * Returns whether this class is user-defined
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @return boolean Whether this class is user-defined
-     */
-    public function isUserDefined() {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
-    }
-
-    /**
-     * Returns whether the given object is an instance of this class
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @param object $object An object to be checked
-     * @return boolean Whether the given object is an instance of this class
-     */
-    public function isInstance( $object ) {
-        return $this->forwardCallToReflectionSource( __FUNCTION__, array( $object ) );
-    }
-
-    /**
-     * Returns an instance of this class
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @param mixed $argument,...  Arguments
-     * @return object An instance of this class
-     */
-    public function newInstance( $arguments ) {
-        /**
-         * Note from PHP Manual: func_get_args() returns a copy of the passed
-         * arguments only, and does not account for default (non-passed)
-         * arguments.
-         */
-        $arguments = func_get_args();
-        return $this->forwardCallToReflectionSource( __FUNCTION__, $arguments );
-    }
-
-    /**
-     * Returns an instance of this class
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @param array<integer,mixed> $arguments Arguments
-     * @return object An instance of this class
-     * @since PHP 5.1.3
-     */
-    public function newInstanceArgs( array $arguments = null ) {
-        return $this->forwardCallToReflectionSource( __FUNCTION__, array( $arguments ) );
-    }
-
-    /**
-     * Sets the value of a static property
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @param string $name Name of the static property
-     * @param mixed $default Value
-     * @return void
-     * @since PHP 5.1.0
-     */
-    public function setStaticPropertyValue( $name, $value ) {
-        $this->forwardCallToReflectionSource( __FUNCTION__, array( $name, $value ) );
-    }
-
-    /**
-     * Returns the name of namespace where this class is defined
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @return string The name of namespace where this class is defined
-     * @since PHP 5.3.0
-     */
-    public function getNamespaceName() {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
-    }
-
-    /**
-     * Returns whether this class is defined in a namespace
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @return boolean Whether this class is defined in a namespace
-     * @since PHP 5.3.0
-     */
-    public function inNamespace() {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
-    }
-
-    /**
-     * Returns the short name of the class (without namespace part)
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @return string
-     *         Returns the short name of the class (without namespace part)
-     * @since PHP 5.3.0
-     */
-    public function getShortName() {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
-    }
-
-    /**
-     * Returns a string representation
-     *
-     * This is purely a wrapper method, which either calls the corresponding
-     * method of the parent class or forwards the call to the ReflectionClass
-     * instance passed to the constructor.
-     * @return string A string representation
-     */
-    public function __toString() {
-        return $this->forwardCallToReflectionSource( __FUNCTION__ );
-    }
-
-    /**
-     * Exports a ReflectionClass instance.
-     *
-     * Returns the output if TRUE is specified for $return, printing it otherwise.
-     * This is purely a wrapper method, which calls the corresponding method of
-     * the parent class (ReflectionClass::export()).
+     * Returns the output if TRUE is specified for return, printing it otherwise.
+     * This is purely a wrapper method which calls the corresponding method of
+     * the parent class.
      * @param ReflectionClass|string $class
      *        ReflectionClass object or name of the class
      * @param boolean $return
-     *        Whether to return (TRUE) or print (FALSE) the output
+     *        Wether to return (TRUE) or print (FALSE) the output
      * @return mixed
      */
     public static function export($class, $return = false) {
         return parent::export($class, $return);
     }
-
 }
 ?>

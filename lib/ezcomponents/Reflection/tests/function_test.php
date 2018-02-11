@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2008 eZ systems as. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  * @version //autogen//
  * @filesource
@@ -46,42 +46,24 @@ class ezcReflectionFunctionTest extends ezcTestCase
         unset($this->fctM3);
     }
 
-    /**
-     * @expectedException ezcReflectionCallToUndefinedMethodException
-     */
-    public function testCall() {
-        $this->fctM1->undefinedMethod();
-    }
-
-    public function testGetAnnotations() {
+    public function testGetTags() {
         $func = $this->fctM1;
-        $annotations = $func->getAnnotations();
+        $tags = $func->getTags();
 
-        $expectedAnnotations = array('webmethod', 'author', 'param', 'param', 'param', 'return');
-        ReflectionTestHelper::expectedAnnotations($expectedAnnotations, $annotations, $this);
+        $expectedTags = array('webmethod', 'author', 'param', 'param', 'param', 'return');
+        ReflectionTestHelper::expectedTags($expectedTags, $tags, $this);
 
 
         $func = $this->fctM2;
-        $annotations = $func->getAnnotations();
-        $expectedAnnotations = array('param', 'param', 'author');
-        ReflectionTestHelper::expectedAnnotations($expectedAnnotations, $annotations, $this);
+        $tags = $func->getTags();
+        $expectedTags = array('param', 'author');
+        ReflectionTestHelper::expectedTags($expectedTags, $tags, $this);
     }
 
-    public function testGetAnnotationsByName( $fixtureName = 'fctM1' ) {
-        $annotationName = 'param';
-        $annotations = $this->$fixtureName->getAnnotations( $annotationName );
-        self::assertTrue( is_array( $annotations ) );
-        self::assertEquals( 3, count( $annotations ) );
-        foreach ( $annotations as $annotation ) {
-            $this->assertType( 'ezcReflectionAnnotation', $annotation );
-            $this->assertContains( $annotation->getName(), $annotationName );
-        }
-    }
-
-    public function testHasAnnotation() {
+    public function testIsTagged() {
         $func = $this->fctM1;
-        self::assertFalse($func->hasAnnotation('licence'));
-        self::assertTrue($func->hasAnnotation('webmethod'));
+        self::assertFalse($func->isTagged('licence'));
+        self::assertTrue($func->isTagged('webmethod'));
     }
 
     public function testGetLongDescription() {
@@ -118,12 +100,12 @@ class ezcReflectionFunctionTest extends ezcTestCase
     public function testGetShortDescription() {
         $func = $this->fctM1;
         $desc = $func->getShortDescription();
-        $expected = 'To check whether an annotation was used';
+        $expected = 'To check whether a tag was used';
         self::assertEquals($expected, $desc);
 
         $func = $this->fctM2;
         $desc = $func->getShortDescription();
-        $expected = '';
+        $expected = 'weird coding standards should also be supported:';
         self::assertEquals($expected, $desc);
 
         $func = $this->fctM3;
@@ -151,7 +133,7 @@ class ezcReflectionFunctionTest extends ezcTestCase
         $func = new ezcReflectionFunction('m1');
         $type = $func->getReturnType();
         self::assertType('ezcReflectionType', $type);
-        self::assertEquals('string', $type->getTypeName());
+        self::assertEquals('string', $type->toString());
 
         $func = new ezcReflectionFunction('m4');
         self::assertNull($func->getReturnType());
@@ -228,7 +210,6 @@ class ezcReflectionFunctionTest extends ezcTestCase
     public function testGetDocComment() {
     	self::assertEquals("/**
  * @param void \$DocuFlaw
- * @param boolean
  * @author flaw joe
 weird coding standards should also be supported: */", $this->fctM2->getDocComment());
     }
@@ -243,12 +224,12 @@ weird coding standards should also be supported: */", $this->fctM2->getDocCommen
         self::assertEquals(
             $this->php_fctM1->invoke(
                 'test',
-                'ezcReflection',
+                'ezcReflectionApi',
                 new ReflectionClass( 'ReflectionClass' )
             ),
             $this->fctM1->invoke(
                 'test',
-                'ezcReflection',
+                'ezcReflectionApi',
                 new ReflectionClass( 'ReflectionClass' )
             )
         );
@@ -263,14 +244,14 @@ weird coding standards should also be supported: */", $this->fctM2->getDocCommen
             $this->php_fctM1->invokeArgs(
                 array(
                     'test',
-                    'ezcReflection',
+                    'ezcReflectionApi',
                     new ReflectionClass( 'ReflectionClass' )
                 )
             ),
             $this->fctM1->invokeArgs(
                 array(
                     'test',
-                    'ezcReflection',
+                    'ezcReflectionApi',
                     new ReflectionClass( 'ReflectionClass' )
                 )
             )
@@ -314,74 +295,6 @@ weird coding standards should also be supported: */", $this->fctM2->getDocCommen
         self::assertEquals( ReflectionFunction::export( 'm1', true ), ezcReflectionFunction::export( 'm1', true ) );
         self::assertEquals( ReflectionFunction::export( 'm2', true ), ezcReflectionFunction::export( 'm2', true ) );
         self::assertEquals( ReflectionFunction::export( 'm3', true ), ezcReflectionFunction::export( 'm3', true ) );
-    }
-
-    public function getWrapperMethods() {
-        $wrapperMethods = array(
-            array( '__toString', array() ),
-            array( 'getName', array() ),
-            array( 'isInternal', array() ),
-            array( 'isUserDefined', array() ),
-            // not in ReflectionMethod: array( 'isDisabled', array() ),
-            array( 'getFileName', array() ),
-            array( 'getStartLine', array() ),
-            array( 'getEndLine', array() ),
-            array( 'getDocComment', array() ),
-            array( 'getStaticVariables', array() ),
-            array( 'returnsReference', array() ),
-            array( 'getNumberOfParameters', array() ),
-            array( 'getNumberOfRequiredParameters', array() ),
-            array( 'getExtension', array() ),
-            array( 'getExtensionName', array() ),
-            array( 'isDeprecated', array() ),
-        );
-        if ( version_compare( PHP_VERSION, '5.3.0' ) === 1 ) {
-            $wrapperMethods530 = array(
-                array( 'getNamespaceName', array() ),
-                array( 'inNamespace', array() ),
-                array( 'getShortName', array() ),
-                array( 'isClosure', array() ),
-            );
-        } else {
-            $wrapperMethods530 = array();
-        }
-        return array_merge( $wrapperMethods, $wrapperMethods530 );
-    }
-
-    /**
-     * @dataProvider getWrapperMethods
-     */
-    public function testWrapperMethods( $method, $arguments ) {
-        $fixtureNames = array(
-            'fctM1',
-            'fctM2',
-            'fctM3',
-            'fct_method_exists',
-        );
-        foreach ( $fixtureNames as $fixtureName ) {
-            $php_fixtureName = "php_$fixtureName";
-            try {
-                $actual = call_user_func_array(
-                    array( $this->$fixtureName, $method ), $arguments
-                );
-                $expected = call_user_func_array(
-                    array( $this->$php_fixtureName, $method ), $arguments
-                );
-                if ( $expected instanceOf Reflector ) {
-                    self::assertEquals( (string) $expected, (string) $actual );
-                } else {
-                    self::assertEquals( $expected, $actual );
-                }
-            } catch ( ReflectionException $e ) {
-                if ( !(
-                    $this->$php_fixtureName instanceOf ReflectionMethod
-                    and
-                    $e->getMessage() == 'Method ' . $this->$php_fixtureName->getDeclaringClass()->getName() . '::' . $this->$php_fixtureName->getName() . ' does not have a prototype'
-                ) ) {
-                    self::fail( 'Unexpected ReflectionException: ' . $e->getMessage() );
-                }
-            }
-        }
     }
 
     public static function suite()

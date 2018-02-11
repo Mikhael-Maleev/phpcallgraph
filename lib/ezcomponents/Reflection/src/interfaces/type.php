@@ -4,7 +4,7 @@
  *
  * @package Reflection
  * @version //autogen//
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2008 eZ systems as. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  */
 
@@ -18,61 +18,70 @@
 interface ezcReflectionType {
 
     /**
-     * @return boolean
+     * Return type of elements in an array type or null if is not an array
+     *
+     * @return ezcReflectionType
      */
-    public function isArray();
+    function getArrayType();
+
+    /**
+     * Returns type of key used in a map
+     *
+     * @return ezcReflectionType
+     */
+    function getMapIndexType();
+
+    /**
+     * Returns type of values used in a map
+     *
+     * @return ezcReflectionType
+     */
+    function getMapValueType();
 
     /**
      * @return boolean
      */
-    public function isObject();
+    function isArray();
 
     /**
      * @return boolean
      */
-    public function isPrimitive();
+    function isClass();
 
     /**
      * @return boolean
      */
-    public function isMap();
+    function isPrimitive();
+
+    /**
+     * @return boolean
+     */
+    function isMap();
 
     /**
      * Return the name of this type as string
      *
      * @return string
+     * @todo approve name, may be getName is better
      */
-    public function getTypeName();
+    function toString();
 
+    //** Advanced infos for xml mapping ************************************
     /**
-     * Returns whether this type is one of integer, float, string, or boolean.
-     * 
-     * Types array, object, resource, NULL, mixed, number, and callback are not
-     * scalar.
-     * 
      * @return boolean
      */
-    public function isScalarType();
+    function isStandardType();
 
     /**
-     * Returns the name to be used in a xml schema for this type.
-     *
+     * Returns the name to be used in a xml schema for this type
      * @return string
      */
-    public function getXmlName();
+    function getXmlName();
 
     /**
-     * @param  DOMDocument $dom
+     * @param DOMDocument $dom
      * @return DOMElement
      */
-    public function getXmlSchema(DOMDocument $dom);
-
-        /**
-     * Returns a string representation.
-     *
-     * @return String Type name
-     */
-    public function __toString();
-
+    function getXmlSchema($dom);
 }
 ?>

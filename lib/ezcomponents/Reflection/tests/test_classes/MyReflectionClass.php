@@ -12,12 +12,7 @@ class MyReflectionClass extends ReflectionClass {
 	}
 
 	public function getConstructor() {
-	    $constructor = parent::getConstructor();
-	    if ( $constructor != null ) {
-	        return new MyReflectionMethod( $this->getName(), $constructor->getName() );
-	    } else {
-	        return $constructor;
-	    }
+		return new MyReflectionMethod($this->getName(), parent::getConstructor()->getName());
 	}
 
     public function getMethod($name) {

@@ -1,10 +1,10 @@
 <?php
 /**
- * File containing the ezcConsoleInputStandardHelpGenerator class.
+ * File containing the ezcConsoleStandardInputHelpGenerator class.
  *
  * @package ConsoleTools
  * @version //autogentag//
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2009 eZ Systems AS. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @TODO Verify interface and make it public to replace the validation in 
  *       {@link ezcConsoleInput}.
  */
-class ezcConsoleInputStandardHelpGenerator implements ezcConsoleInputHelpGenerator
+class ezcConsoleStandardInputHelpGenerator implements ezcConsoleInputHelpGenerator
 {
     /**
      * Input object. 
@@ -82,8 +82,8 @@ class ezcConsoleInputStandardHelpGenerator implements ezcConsoleInputHelpGenerat
      * the options to include.
      * 
      * @param bool $long 
-     * @param array(string) $optionsFilter
-     * @return array(array(string))
+     * @param array(int=>string) $optionsFilter
+     * @return array(int=>array(int=>string))
      */
     public function generateUngroupedOptionHelp( $long = false, array $optionsFilter = null )
     {
@@ -141,7 +141,7 @@ class ezcConsoleInputStandardHelpGenerator implements ezcConsoleInputHelpGenerat
      * @param array(string=>array(string)) $groups
      * @param bool $long 
      * @param array(string) $params 
-     * @return array(string=>array(array(string)))
+     * @return array(string=>array(int=>array(int=>string)))
      */
     public function generateGroupedOptionHelp( array $groups, $long = false, array $optionsFilter = null )
     {
@@ -189,7 +189,7 @@ class ezcConsoleInputStandardHelpGenerator implements ezcConsoleInputHelpGenerat
      * used.
      *
      * @param bool $long
-     * @return array(array(string))
+     * @return array(int=>array(int=>string))
      */
     public function generateArgumentHelp( $long = false )
     {
@@ -250,11 +250,8 @@ class ezcConsoleInputStandardHelpGenerator implements ezcConsoleInputHelpGenerat
      * Generates a command line synopsis for the options and arguments.
      *
      * This method generates a synopsis string that lists the options and 
-     * parameters available, indicating their usage. If $optionsFilter is
-     * submitted, only the options named in this array (short or long variant) 
-     * will be included in the synopsis.
+     * parameters available, indicating their usage.
      *
-     * @param array(string) $optionsFilter
      * @return string
      */
     public function generateSynopsis( array $optionFilter = null )
@@ -293,7 +290,7 @@ class ezcConsoleInputStandardHelpGenerator implements ezcConsoleInputHelpGenerat
      * terminate that after 2 recursions.
      * 
      * @param ezcConsoleOption $option        The option to include.
-     * @param array(string) $usedOptions Array of used option short names.
+     * @param array(int=>string) $usedOptions Array of used option short names.
      * @param int $depth                      Current recursion depth.
      * @return string The synopsis for this parameter.
      */

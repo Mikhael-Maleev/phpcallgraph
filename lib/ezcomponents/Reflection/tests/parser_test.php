@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2008 eZ systems as. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  * @version //autogen//
  * @filesource
@@ -8,186 +8,136 @@
  * @subpackage Tests
  */
 
-class ezcReflectionDocCommentParserTest extends ezcTestCase
+class ezcReflectionDocParserTest extends ezcTestCase
 {
     /**
      * @var string[]
      */
     private static $docs;
 
-    public function testGetAnnotationsByName() {
-        $parser = ezcReflection::getDocCommentParser();
+    public function testGetTagsByName() {
+        $parser = ezcReflectionApi::getDocParserInstance();
         $parser->parse(self::$docs[0]);
-        $annotations = $parser->getAnnotationsByName('copyright');
-        self::assertEquals(1, count($annotations));
+        $tags = $parser->getTagsByName('copyright');
+        self::assertEquals(1, count($tags));
 
-        $annotations = $parser->getAnnotationsByName('filesource');
-        self::assertEquals(1, count($annotations));
+        $tags = $parser->getTagsByName('filesource');
+        self::assertEquals(1, count($tags));
 
-        $annotations = $parser->getAnnotationsByName('noneExistingAnnotation');
-        self::assertEquals(0, count($annotations));
+        $tags = $parser->getTagsByName('noneExistingTag');
+        self::assertEquals(0, count($tags));
 
-        $parser = ezcReflection::getDocCommentParser();
+        $parser = ezcReflectionApi::getDocParserInstance();
         $parser->parse(self::$docs[2]);
-        $annotations = $parser->getAnnotationsByName('oneannotationonly');
-        self::assertEquals(1, count($annotations));
+        $tags = $parser->getTagsByName('onetagonly');
+        self::assertEquals(1, count($tags));
 
-        $parser = ezcReflection::getDocCommentParser();
+        $parser = ezcReflectionApi::getDocParserInstance();
         $parser->parse(self::$docs[3]);
-        $annotations = $parser->getAnnotationsByName('param');
-        self::assertEquals(1, count($annotations));
+        $tags = $parser->getTagsByName('param');
+        self::assertEquals(1, count($tags));
 
-        $parser = ezcReflection::getDocCommentParser();
+        $parser = ezcReflectionApi::getDocParserInstance();
         $parser->parse(self::$docs[4]);
-        $annotations = $parser->getAnnotationsByName('foobar');
-        self::assertEquals(1, count($annotations));
+        $tags = $parser->getTagsByName('foobar');
+        self::assertEquals(1, count($tags));
 
-        $parser = ezcReflection::getDocCommentParser();
+        $parser = ezcReflectionApi::getDocParserInstance();
         $parser->parse(self::$docs[6]);
-        $annotations = $parser->getAnnotationsByName('author');
-        self::assertEquals(1, count($annotations));
+        $tags = $parser->getTagsByName('author');
+        self::assertEquals(1, count($tags));
     }
 
-    public function testGetAnnotations() {
-        $parser = ezcReflection::getDocCommentParser();
+    public function testGetTags() {
+        $parser = ezcReflectionApi::getDocParserInstance();
         $parser->parse(self::$docs[0]);
-        $annotations = $parser->getAnnotations();
-        self::assertEquals(6, count($annotations));
+        $tags = $parser->getTags();
+        self::assertEquals(6, count($tags));
 
-        $parser = ezcReflection::getDocCommentParser();
+        $parser = ezcReflectionApi::getDocParserInstance();
         $parser->parse(self::$docs[1]);
-        $annotations = $parser->getAnnotations();
-        self::assertEquals(0, count($annotations));
+        $tags = $parser->getTags();
+        self::assertEquals(0, count($tags));
 
-        $parser = ezcReflection::getDocCommentParser();
+        $parser = ezcReflectionApi::getDocParserInstance();
         $parser->parse(self::$docs[2]);
-        $annotations = $parser->getAnnotations();
-        self::assertEquals(1, count($annotations));
+        $tags = $parser->getTags();
+        self::assertEquals(1, count($tags));
 
-        $parser = ezcReflection::getDocCommentParser();
+        $parser = ezcReflectionApi::getDocParserInstance();
         $parser->parse(self::$docs[3]);
-        $annotations = $parser->getAnnotations();
-        self::assertEquals(2, count($annotations));
+        $tags = $parser->getTags();
+        self::assertEquals(2, count($tags));
 
-        $parser = ezcReflection::getDocCommentParser();
+        $parser = ezcReflectionApi::getDocParserInstance();
         $parser->parse(self::$docs[4]);
-        $annotations = $parser->getAnnotations();
-        self::assertEquals(3, count($annotations));
+        $tags = $parser->getTags();
+        self::assertEquals(3, count($tags));
 
-        $parser = ezcReflection::getDocCommentParser();
+        $parser = ezcReflectionApi::getDocParserInstance();
         $parser->parse(self::$docs[5]);
-        $annotations = $parser->getAnnotations();
-        self::assertEquals(0, count($annotations));
+        $tags = $parser->getTags();
+        self::assertEquals(0, count($tags));
 
-        $parser = ezcReflection::getDocCommentParser();
+        $parser = ezcReflectionApi::getDocParserInstance();
         $parser->parse(self::$docs[6]);
-        $annotations = $parser->getAnnotations();
-        self::assertEquals(9, count($annotations));
+        $tags = $parser->getTags();
+        self::assertEquals(9, count($tags));
     }
 
-    public function testGetParamAnnotations() {
-        $parser = ezcReflection::getDocCommentParser();
+    public function testGetParamTags() {
+        $parser = ezcReflectionApi::getDocParserInstance();
         $parser->parse(self::$docs[0]);
-        $annotations = $parser->getParamAnnotations();
-        self::assertEquals(0, count($annotations));
+        $tags = $parser->getParamTags();
+        self::assertEquals(0, count($tags));
 
-        $parser = ezcReflection::getDocCommentParser();
+        $parser = ezcReflectionApi::getDocParserInstance();
         $parser->parse(self::$docs[3]);
-        $annotations = $parser->getParamAnnotations();
-        self::assertEquals(1, count($annotations));
+        $tags = $parser->getParamTags();
+        self::assertEquals(1, count($tags));
 
-        $parser = ezcReflection::getDocCommentParser();
+        $parser = ezcReflectionApi::getDocParserInstance();
         $parser->parse(self::$docs[6]);
-        $annotations = $parser->getParamAnnotations();
-        self::assertEquals(3, count($annotations));
-        self::assertEquals('test', $annotations[0]->getParamName());
-        self::assertEquals('string', $annotations[0]->getTypeName());
+        $tags = $parser->getParamTags();
+        self::assertEquals(3, count($tags));
+        self::assertEquals('test', $tags[0]->getParamName());
+        self::assertEquals('string', $tags[0]->getType());
 
-        self::assertEquals('test3', $annotations[2]->getParamName());
-        self::assertEquals('NonExistingType', $annotations[2]->getTypeName());
-        
-        
-        $parser = ezcReflection::getDocCommentParser();
-        $m2 = new ezcReflectionFunction( 'm2' );
-        $parser->parse( $m2->getDocComment() );
-        $annotations = $parser->getParamAnnotations();
-        self::assertEquals(2, count($annotations));
-        self::assertEquals('DocuFlaw', $annotations[0]->getParamName());
-        self::assertEquals('NULL', $annotations[0]->getTypeName());
-        self::assertEquals( array( 'NULL', 'DocuFlaw' ), $annotations[0]->getParams() );
-        // testAddDescriptionLine
-        $originalDescription = $annotations[0]->getDescription();
-        $additionalDescriptionLine
-            = 'This is an additional line of description.';
-        $annotations[0]->addDescriptionLine( $additionalDescriptionLine );
-        self::assertEquals(
-            $originalDescription . "\n" . $additionalDescriptionLine,
-            $annotations[0]->getDescription()
-        );
-        
-
-        self::assertNull($annotations[1]->getParamName());
-        self::assertEquals('boolean', $annotations[1]->getTypeName());
-        self::assertEquals( array( 'boolean' ), $annotations[1]->getParams() );
-        
+        self::assertEquals('test3', $tags[2]->getParamName());
+        self::assertEquals('NonExistingType', $tags[2]->getType());
     }
 
-    public function testGetVarAnnotations() {
+    public function testGetVarTags() {
         $comment = <<<EOF
 /**
 * @var string
 */
 EOF;
-        $parser = ezcReflection::getDocCommentParser();
+        $parser = ezcReflectionApi::getDocParserInstance();
         $parser->parse($comment);
-		$annotations = $parser->getVarAnnotations();
-		self::assertEquals(1, count($annotations));
-		self::assertType('ezcReflectionAnnotationVar', $annotations[0]);
-		self::assertEquals('string', $annotations[0]->getTypeName());
-		self::assertEquals('', $annotations[0]->getDescription());
-        
-        $comment = <<<EOF
-   /**
-    * @var bool[] An array of
-    *      boolean values.
-    */
-EOF;
-        $parser = ezcReflection::getDocCommentParser();
-        $parser->parse($comment);
-		$annotations = $parser->getVarAnnotations();
-		self::assertEquals(1, count($annotations));
-		self::assertType('ezcReflectionAnnotationVar', $annotations[0]);
-        self::assertEquals("An array of\nboolean values.", $annotations[0]->getDescription());
-        self::assertEquals('bool[]', $annotations[0]->getTypeName());
-        $type = ezcReflection::getReflectionTypeFactory()->getType($annotations[0]->getTypeName());
-		self::assertType('ezcReflectionArrayType', $type);
-        self::assertTrue($type->isArray());
-        $arrayType = $type->getValueType();
-		self::assertType('ezcReflectionPrimitiveType', $arrayType);
-        self::assertTrue($arrayType->isPrimitive());
-        self::assertTrue($arrayType->isScalarType());
-        self::assertEquals('boolean', $arrayType->getTypeName());
+		$tags = $parser->getVarTags();
+        self::assertEquals('string', $tags[0]->getType());
     }
 
-    public function testGetReturnAnnotations() {
-        $parser = ezcReflection::getDocCommentParser();
+    public function testGetReturnTags() {
+        $parser = ezcReflectionApi::getDocParserInstance();
         $parser->parse(self::$docs[6]);
-        $annotations = $parser->getReturnAnnotations();
+        $tags = $parser->getReturnTags();
 
-        self::assertEquals("Hello\nWorld!", $annotations[0]->getDescription());
-        self::assertEquals('string', $annotations[0]->getTypeName());
+        self::assertEquals('Hello World', $tags[0]->getDescription());
+        self::assertEquals('string', $tags[0]->getType());
     }
 
-    public function testHasAnnotation() {
-        $parser = ezcReflection::getDocCommentParser();
+    public function testIsTagged() {
+        $parser = ezcReflectionApi::getDocParserInstance();
         $parser->parse(self::$docs[6]);
-        self::assertTrue($parser->hasAnnotation('return'));
+        self::assertTrue($parser->isTagged('return'));
     }
 
     public function testGetShortDescription() {
         $class = new ReflectionClass('TestWebservice');
         $doc = $class->getDocComment();
-        $parser = ezcReflection::getDocCommentParser();
+        $parser = ezcReflectionApi::getDocParserInstance();
         $parser->parse($doc);
         $desc = $parser->getShortDescription();
 
@@ -197,18 +147,18 @@ EOF;
     public function testGetLongDescription() {
         $class = new ReflectionClass('TestWebservice');
         $doc = $class->getDocComment();
-        $parser = ezcReflection::getDocCommentParser();
+        $parser = ezcReflectionApi::getDocParserInstance();
         $parser->parse($doc);
         $desc = $parser->getLongDescription();
 
-        $expected = "This is the long description with may be additional infos and much more lines\nof text.\n\nEmpty lines are valid, too.\n\nfoo bar";
+        $expected = "This is the long description with may be additional infos and much more lines\nof text.\n\nEmpty lines are valide to.\n\nfoo bar";
         self::assertEquals($expected, $desc);
     }
 
     public static function suite()
     {
         self::$docs = array();
-        $class = new ReflectionClass('ezcReflectionDocCommentParserTest');
+        $class = new ReflectionClass('ezcReflectionDocParserTest');
         self::$docs[] = $class->getDocComment();
 
         $class = new ReflectionClass('TestMethods');
@@ -219,7 +169,7 @@ EOF;
             self::$docs[] = $method->getDocComment();
         }
 
-        return new PHPUnit_Framework_TestSuite( "ezcReflectionDocCommentParserTest" );
+        return new PHPUnit_Framework_TestSuite( "ezcReflectionDocParserTest" );
     }
 }
 ?>

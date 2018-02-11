@@ -4,7 +4,7 @@
  *
  * @package Reflection
  * @version //autogen//
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2008 eZ systems as. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  */
 
@@ -14,17 +14,15 @@
  * @package Reflection
  * @version //autogen//
  * @author Stefan Marr <mail@stefan-marr.de>
- * @author Falko Menge <mail@falko-menge.de>
  */
 interface ezcReflectionTypeFactory {
 
     /**
      * Creates a type object for given typeName
-     * @param string|ReflectionClass $typeName
+     * @param string $typeName
      * @return ezcReflectionType
      */
-    function getType( $typeName );
-
+    function getType($typeName);
 }
 
 ?>

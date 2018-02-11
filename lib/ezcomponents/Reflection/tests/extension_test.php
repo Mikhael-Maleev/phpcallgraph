@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2008 eZ systems as. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  * @version //autogen//
  * @filesource
@@ -48,7 +48,7 @@ class ezcReflectionExtensionTest extends ezcTestCase
         $classes = $this->extRef->getClasses();
 
         foreach ($classes as $class) {
-            self::assertType('ezcReflectionClass', $class);
+            self::assertType('ezcReflectionClassType', $class);
         }
     }
 

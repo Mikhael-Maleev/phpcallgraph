@@ -4,7 +4,7 @@
  *
  * @package Base
  * @version //autogentag//
- * @copyright Copyright (C) 2005-2010 eZ Systems AS. All rights reserved.
+ * @copyright Copyright (C) 2005-2009 eZ Systems AS. All rights reserved.
  * @license http://ez.no/licenses/new_bsd New BSD License
  */
 /**
@@ -154,7 +154,7 @@ class ezcBase
         // Not cached, so load the autoload from the package.
         // Matches the first and optionally the second 'word' from the classname.
         $fileNames = array();
-        if ( preg_match( "/^([a-z0-9]*)([A-Z][a-z0-9]*)?([A-Z][a-z0-9]*)?/", $className, $matches ) !== false )
+        if ( preg_match( "/^([a-z0-9]*)([A-Z][a-z0-9]*)([A-Z][a-z0-9]*)?/", $className, $matches ) !== false )
         {
             $autoloadFile = "";
             // Try to match with both names, if available.
@@ -178,9 +178,7 @@ class ezcBase
                     {
                         return true;
                     }
-                    // break intentionally missing.
 
-                case 2:
                     // check for autoload.php
                     $autoloadFile = 'autoload.php';
                     $fileNames[] = $autoloadFile;
